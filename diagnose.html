@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>اختبار البداية السحري | جسر الرياضيات 🔮</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { display:['"Baloo Bhaijaan 2"','sans-serif'], body:['Tajawal','sans-serif'] },
+    colors: {
+      grape:{100:'#efe7ff',300:'#c5a8ff',400:'#a880ff',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9'},
+      coral:{100:'#ffe4e0',300:'#ffab9e',500:'#ff6b5e',600:'#f0473a'},
+      sunny:{100:'#fff3cc',300:'#ffd95e',400:'#ffce2e',500:'#ffb800'},
+      mint:{100:'#d2fff0',300:'#7ff0cb',500:'#1fd9a3',600:'#0fb98a',700:'#0a9b73'},
+      sky:{100:'#d9f0ff',300:'#8ad6ff',500:'#22b0ff',600:'#0090e6'},
+      bubble:{100:'#ffe0f4',300:'#ff9ed8',500:'#ff4fb8',600:'#ed2aa0'},
+    },
+    boxShadow:{ pop:'0 6px 0 0 rgba(0,0,0,.16)', card:'0 12px 0 -4px rgba(0,0,0,.06),0 24px 48px -20px rgba(0,0,0,.18)', bubbly:'0 18px 50px -12px rgba(124,58,237,.35)' },
+    keyframes:{
+      bob:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-12px)'}},
+      wobble:{'0%,100%':{transform:'rotate(-5deg)'},'50%':{transform:'rotate(5deg)'}},
+      pop:{'0%':{transform:'scale(0)',opacity:'0'},'70%':{transform:'scale(1.12)'},'100%':{transform:'scale(1)',opacity:'1'}},
+      slideUp:{'0%':{transform:'translateY(30px)',opacity:'0'},'100%':{transform:'translateY(0)',opacity:'1'}},
+      shake:{'10%,90%':{transform:'translateX(-2px)'},'20%,80%':{transform:'translateX(4px)'},'30%,50%,70%':{transform:'translateX(-7px)'},'40%,60%':{transform:'translateX(7px)'}},
+      fillbar:{from:{width:'0'}},
+    },
+    animation:{ bob:'bob 4s ease-in-out infinite', wobble:'wobble 3s ease-in-out infinite', pop:'pop .5s cubic-bezier(.34,1.56,.64,1) both', slideUp:'slideUp .6s cubic-bezier(.16,.84,.44,1) both', shake:'shake .5s', fillbar:'fillbar 1s ease both' },
+  }},
+};
+</script>
+<style>
+  body{font-family:'Tajawal',sans-serif; background:#fff9ef;}
+  .font-display{font-family:'Baloo Bhaijaan 2',sans-serif;}
+  ::selection{background:#ffd95e;color:#6d28d9;}
+  .sky-bg{background:radial-gradient(circle at 15% 15%,#ffe0f4 0,transparent 30%),radial-gradient(circle at 85% 12%,#d9f0ff 0,transparent 32%),radial-gradient(circle at 75% 85%,#d2fff0 0,transparent 34%),#fff9ef;}
+  .dotty{background-image:radial-gradient(rgba(124,58,237,.10) 2px,transparent 2px);background-size:26px 26px;}
+  .btn-pop{box-shadow:0 6px 0 0 rgba(0,0,0,.16); transition:transform .12s, box-shadow .12s;}
+  .btn-pop:active{transform:translateY(5px); box-shadow:0 1px 0 0 rgba(0,0,0,.16);}
+  .btn-pop:hover{transform:translateY(-2px); box-shadow:0 9px 0 0 rgba(0,0,0,.16);}
+  .blob{position:absolute;border-radius:42% 58% 63% 37%/41% 44% 56% 59%;filter:blur(3px);opacity:.45;}
+  .confetti{position:fixed;width:12px;height:14px;top:-20px;z-index:9999;pointer-events:none;border-radius:3px;}
+  /* كسر مرسوم */
+  .frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle;margin:0 .15em;}
+  .frac .num{padding:0 .35em;}
+  .frac .den{padding:.06em .35em 0;border-top:.16em solid currentColor;}
+</style>
+</head>
+
+<body class="sky-bg text-grape-700 min-h-screen overflow-x-hidden">
+
+<!-- شريط علوي بسيط -->
+<header class="px-3 sm:px-5 pt-3">
+  <div class="mx-auto max-w-3xl flex items-center justify-between rounded-[1.4rem] bg-white/90 backdrop-blur border-4 border-white shadow-card px-4 py-2.5">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="grid place-items-center w-10 h-10 rounded-2xl bg-gradient-to-br from-grape-500 to-bubble-500 text-white animate-wobble">
+        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3-5 6-5 9 0s6 5 9 0"/><path d="M3 17v3M21 17v3"/></svg>
+      </span>
+      <span class="font-display text-lg font-extrabold text-grape-700">جسر الرياضيات</span>
+    </a>
+    <a href="index.html" class="font-display text-sm font-bold text-grape-400 hover:text-coral-500 transition">✕ خروج</a>
+  </div>
+</header>
+
+<main class="relative px-4 sm:px-6 py-8">
+  <!-- بقع -->
+  <div class="blob w-60 h-60 bg-sunny-300 top-20 -right-12 animate-bob"></div>
+  <div class="blob w-52 h-52 bg-mint-300 bottom-10 -left-10 animate-bob"></div>
+
+  <div id="stage" class="relative mx-auto max-w-3xl"></div>
+</main>
+
+<script>
+/* ============================================================
+   اختبار البداية — منطق الـ distractors التشخيصية
+   إعداد المعلمة T. Wad Refae
+   كل خيار خاطئ يكشف نوع فجوة، ويوجّه الطالب إليها بشرح وعلاج.
+   ============================================================ */
+
+const stage = document.getElementById('stage');
+
+/* أداة كسر مرسوم */
+function frac(n,d){ return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`; }
+function toAr(n){ return String(n).replace(/[0-9]/g, d=>'٠١٢٣٤٥٦٧٨٩'[d]); }
+
+/* احتفال (كونفيتي) */
+function confetti(){
+  const cols=['#ffb800','#ff4fb8','#1fd9a3','#22b0ff','#8b5cf6','#ff6b5e'];
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=cols[i%cols.length];
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    const dur=1.6+Math.random()*1.4;
+    c.animate([{transform:`translateY(0) rotate(0)`,opacity:1},{transform:`translateY(105vh) rotate(${720*Math.random()}deg)`,opacity:.9}],{duration:dur*1000,easing:'cubic-bezier(.2,.6,.4,1)'});
+    document.body.appendChild(c); setTimeout(()=>c.remove(),dur*1000);
+  }
+}
+
+/* بيانات السؤال + التشخيص لكل خيار */
+const QUESTION = {
+  promptHTML: `كم يساوي ${frac(1,2)} <span class="text-bubble-500">+</span> ${frac(1,2)} ؟`,
+  hint: 'فكّر: نصف تفاحة زائد نصف تفاحة = ؟ 🍎',
+  options: [
+    {
+      key:'A', label: frac(2,4), emoji:'🧩',
+      correct:false,
+      type:'جمع البسط مع البسط والمقام مع المقام',
+      gap:'الخلط في طريقة جمع الكسور',
+      gapWorld:'🍰 عالم الكسور — مهارة «جمع الكسور المتشابهة»',
+      why:'يبدو أنك جمعت الأرقام العلوية مع بعضها (١+١=٢) والأرقام السفلية مع بعضها (٢+٢=٤). هذه أكثر فجوة شائعة في الكسور!',
+      rule:'القاعدة الذهبية: عند جمع كسور لها <b>نفس المقام</b>، نجمع <b>البسط فقط</b> ونُبقي المقام كما هو.',
+      fix:'مهمة الإنقاذ: «جمع الكسور المتشابهة» — ٣ تحديات قصيرة بالصور.',
+    },
+    {
+      key:'B', label:'<span class="text-3xl">١</span>', emoji:'🏆',
+      correct:true,
+      praise:'إجابة البطل! 🎉',
+      why:'بالضبط! نصف + نصف = كامل واحد. لقد أتقنت جمع الكسور المتشابهة بثقة!',
+    },
+    {
+      key:'C', label: frac(1,4), emoji:'✖️',
+      correct:false,
+      type:'ضرب المقامات بدل جمع الكسور',
+      gap:'الخلط بين عملية الجمع وعملية الضرب',
+      gapWorld:'🍰 عالم الكسور — التمييز بين «الجمع» و«الضرب»',
+      why:'يبدو أنك ضربت المقامين (٢×٢=٤) وأبقيت البسط ١. هذه طريقة الضرب وليست الجمع — من السهل أن تختلط علينا!',
+      rule:'تذكّر: في <b>الجمع</b> نُبقي المقام، أما في <b>الضرب</b> نضرب البسط بالبسط والمقام بالمقام. عمليتان مختلفتان!',
+      fix:'مهمة الإنقاذ: «متى أجمع ومتى أضرب الكسور؟» مع أمثلة بصرية.',
+    },
+    {
+      key:'D', label: frac(2,2), emoji:'🌗',
+      correct:false,
+      type:'جمع البسط بشكل صحيح لكن جمع المقام أيضاً... ثم التوقف قبل التبسيط',
+      gap:'عدم تبسيط الكسر / عدم إدراك أن ٢/٢ = ١',
+      gapWorld:'🍰 عالم الكسور — مهارة «تبسيط الكسر والكسور المساوية للواحد»',
+      why:'اقتربت كثيراً! جمعت البسط صحيحاً (١+١=٢)، لكن جمعت المقام أيضاً فصار ٢/٢. والمفتاح الذي ينقصك: أي كسر بسطه = مقامه يساوي <b>١ صحيح</b>!',
+      rule:'القاعدة: ${"نُبقي المقام عند الجمع"} → ٢/٢. وكل كسر مثل ٢/٢ أو ٥/٥ = <b>واحد صحيح</b>.',
+      fix:'مهمة الإنقاذ: «الكسور التي تساوي واحداً» + تبسيط الكسر.',
+    },
+  ],
+};
+
+/* ============ الشاشة ١: الترحيب ============ */
+function screenWelcome(){
+  stage.innerHTML = `
+    <div class="text-center animate-pop">
+      <div class="mx-auto w-32 h-32 grid place-items-center rounded-[2rem] bg-gradient-to-br from-sunny-300 to-coral-500 text-7xl shadow-bubbly animate-bob">🔮</div>
+      <h1 class="font-display mt-6 text-4xl sm:text-5xl font-extrabold text-grape-700">اختبار البداية السحري!</h1>
+      <p class="mt-3 text-lg text-grape-600/85 font-medium max-w-xl mx-auto">
+        مرحباً أيها البطل! 👋 سأسألك أسئلة قصيرة لأكتشف نقطة انطلاقك.
+        <br/>لا تقلق من الأخطاء — <b class="text-bubble-500">كل إجابة تساعدني أرسم لك خريطتك السحرية!</b>
+      </p>
+      <div class="mt-7 grid sm:grid-cols-3 gap-4 text-right">
+        <div class="rounded-3xl bg-white border-4 border-white shadow-card p-5"><div class="text-3xl">⏱️</div><div class="font-display font-extrabold mt-2 text-grape-700">٧ دقائق</div><div class="text-sm text-grape-500 font-medium">سريع وممتع</div></div>
+        <div class="rounded-3xl bg-white border-4 border-white shadow-card p-5"><div class="text-3xl">🎯</div><div class="font-display font-extrabold mt-2 text-grape-700">أسئلة ذكية</div><div class="text-sm text-grape-500 font-medium">تكشف فجواتك</div></div>
+        <div class="rounded-3xl bg-white border-4 border-white shadow-card p-5"><div class="text-3xl">🗺️</div><div class="font-display font-extrabold mt-2 text-grape-700">خطة خاصة</div><div class="text-sm text-grape-500 font-medium">صُمّمت لك أنت</div></div>
+      </div>
+      <button onclick="screenQuestion()" class="font-display mt-8 inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-white text-xl font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">
+        لنبدأ! 🚀
+      </button>
+      <p class="mt-4 text-sm font-bold text-grape-400">عرض تجريبي — سؤال نموذجي واحد لتوضيح الفكرة</p>
+    </div>`;
+}
+
+/* ============ الشاشة ٢: السؤال ============ */
+let answered=false;
+function screenQuestion(){
+  answered=false;
+  const opts = QUESTION.options.map((o,i)=>`
+    <button data-i="${i}" onclick="choose(${i})"
+      class="opt group font-display flex items-center justify-between gap-3 w-full px-6 py-5 rounded-3xl bg-white border-4 border-grape-100 shadow-pop btn-pop text-2xl font-extrabold text-grape-700">
+      <span class="grid place-items-center w-11 h-11 rounded-2xl bg-grape-100 text-grape-500 text-base shrink-0">${['أ','ب','ج','د'][i]}</span>
+      <span class="flex-1 text-center">${o.label}</span>
+      <span class="text-2xl opacity-0 group-hover:opacity-100 transition">${o.emoji}</span>
+    </button>`).join('');
+
+  stage.innerHTML = `
+    <div class="animate-slideUp">
+      <!-- شريط التقدم -->
+      <div class="flex items-center justify-between font-display font-bold text-grape-500 text-sm">
+        <span>السؤال ١ من ١٠</span><span>⏱️ ٠٦:٤٢</span>
+      </div>
+      <div class="mt-2 h-3 rounded-full bg-grape-100 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-l from-mint-500 to-sky-500" style="width:10%;animation:fillbar 1s ease both"></div></div>
+
+      <!-- بطاقة السؤال -->
+      <div class="mt-6 rounded-[2.5rem] bg-white border-[6px] border-white shadow-card p-7 sm:p-9 text-center relative overflow-hidden">
+        <span class="absolute -top-3 -left-3 text-5xl opacity-10 select-none">🍰</span>
+        <span class="inline-block px-4 py-1.5 rounded-full bg-mint-100 text-mint-700 font-display font-bold text-sm">🍰 عالم الكسور</span>
+        <div class="font-display mt-5 text-4xl sm:text-5xl font-extrabold text-grape-700 flex items-center justify-center flex-wrap gap-1">${QUESTION.promptHTML}</div>
+        <p class="mt-4 text-grape-500 font-medium">${QUESTION.hint}</p>
+      </div>
+
+      <!-- الخيارات -->
+      <div class="mt-5 grid sm:grid-cols-2 gap-4">${opts}</div>
+      <div id="feedback" class="mt-5"></div>
+    </div>`;
+}
+
+/* ============ عند اختيار إجابة: التشخيص ============ */
+function choose(i){
+  if(answered) return; answered=true;
+  const o = QUESTION.options[i];
+  const buttons = document.querySelectorAll('.opt');
+  buttons.forEach(b=>b.classList.add('pointer-events-none','opacity-60'));
+  const chosen = buttons[i];
+
+  if(o.correct){
+    chosen.classList.remove('opacity-60','border-grape-100');
+    chosen.classList.add('!border-mint-500','bg-mint-100','animate-pop');
+    confetti();
+    document.getElementById('feedback').innerHTML = `
+      <div class="animate-slideUp rounded-[2rem] bg-mint-100 border-4 border-mint-500 p-6 text-center">
+        <div class="text-5xl animate-bob">🎉</div>
+        <h3 class="font-display text-2xl font-extrabold text-mint-700 mt-2">${o.praise}</h3>
+        <p class="mt-2 text-grape-600 font-medium">${o.why}</p>
+        <button onclick="screenResult('${o.key}')" class="font-display mt-5 inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">شاهد خريطتي 🗺️</button>
+      </div>`;
+  } else {
+    chosen.classList.remove('opacity-60','border-grape-100');
+    chosen.classList.add('!border-coral-500','bg-coral-100','animate-shake');
+    // أبرز الإجابة الصحيحة بلطف
+    const correctIdx = QUESTION.options.findIndex(x=>x.correct);
+    buttons[correctIdx].classList.remove('opacity-60');
+    buttons[correctIdx].classList.add('!border-mint-400','bg-mint-50');
+    document.getElementById('feedback').innerHTML = `
+      <div class="animate-slideUp rounded-[2rem] bg-white border-4 border-coral-300 p-6">
+        <div class="flex items-start gap-3">
+          <span class="grid place-items-center w-12 h-12 rounded-2xl bg-coral-100 text-2xl shrink-0 animate-wobble">💡</span>
+          <div>
+            <h3 class="font-display text-xl font-extrabold text-coral-600">لا بأس، اكتشفنا شيئاً مهماً!</h3>
+            <p class="mt-1 text-grape-600 font-medium">${o.why}</p>
+          </div>
+        </div>
+        <div class="mt-4 rounded-2xl bg-grape-100 p-4">
+          <div class="font-display font-bold text-grape-700">🔑 القاعدة:</div>
+          <p class="mt-1 text-grape-600 font-medium">${o.rule.replace('${"نُبقي المقام عند الجمع"}','نُبقي المقام عند الجمع')}</p>
+        </div>
+        <div class="mt-4 rounded-2xl bg-sunny-100 p-4 flex items-center gap-3">
+          <span class="text-2xl">🎯</span>
+          <div>
+            <div class="font-display font-bold text-grape-700">الفجوة المكتشفة:</div>
+            <div class="text-grape-600 font-medium">${o.gap}</div>
+          </div>
+        </div>
+        <button onclick="screenResult('${o.key}')" class="font-display mt-5 w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">شاهد خريطة العلاج 🗺️</button>
+      </div>`;
+  }
+  document.getElementById('feedback').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+/* ============ الشاشة ٣: التقرير + خطة العلاج ============ */
+function screenResult(key){
+  const o = QUESTION.options.find(x=>x.key===key);
+  const correct = o.correct;
+
+  // محتوى مخصّص حسب الإجابة
+  const gapBlock = correct ? `
+    <div class="rounded-[2rem] bg-mint-100 border-4 border-mint-500 p-6">
+      <div class="text-4xl">🌟</div>
+      <h3 class="font-display text-2xl font-extrabold text-mint-700 mt-2">مهارة متقنة!</h3>
+      <p class="mt-1 text-grape-600 font-medium">أتقنت «جمع الكسور المتشابهة». سننقلك مباشرة لتحدٍّ أعلى في عالم الكسور! 🚀</p>
+    </div>` : `
+    <div class="rounded-[2rem] bg-white border-4 border-coral-300 p-6">
+      <div class="flex items-center gap-3">
+        <span class="grid place-items-center w-14 h-14 rounded-2xl bg-coral-100 text-3xl animate-wobble">🎯</span>
+        <div>
+          <div class="font-display text-sm font-bold text-coral-500">الفجوة التي اكتشفناها</div>
+          <h3 class="font-display text-xl font-extrabold text-grape-700">${o.gap}</h3>
+        </div>
+      </div>
+      <div class="mt-4 rounded-2xl bg-grape-100 p-4 text-grape-600 font-medium">
+        <b class="text-grape-700">أين بالضبط؟</b> ${o.gapWorld}
+      </div>
+    </div>`;
+
+  // خطة العلاج — مسار خطوات
+  const planSteps = correct
+    ? [
+        {ic:'✅', t:'جمع الكسور المتشابهة', s:'متقن', done:true, color:'mint'},
+        {ic:'⭐', t:'جمع الكسور المختلفة', s:'التحدّي القادم', done:false, color:'sky'},
+        {ic:'🔒', t:'ضرب الكسور', s:'مغلق — قريباً', done:false, color:'grape'},
+      ]
+    : [
+        {ic:'🩹', t:o.fix.replace('مهمة الإنقاذ: ',''), s:'نبدأ من هنا', done:false, color:'coral'},
+        {ic:'🔁', t:'تدريب بالصور والأمثلة', s:'٣ تحديات قصيرة', done:false, color:'sunny'},
+        {ic:'🏆', t:'إعادة جمع الكسور المتشابهة', s:'لإثبات الإتقان', done:false, color:'mint'},
+      ];
+
+  const colorBg = {mint:'bg-mint-100 text-mint-700',sky:'bg-sky-100 text-sky-600',grape:'bg-grape-100 text-grape-400',coral:'bg-coral-100 text-coral-600',sunny:'bg-sunny-100 text-sunny-500'};
+  const planHTML = planSteps.map((p,idx)=>`
+    <div class="flex items-center gap-4 animate-slideUp" style="animation-delay:${idx*.08}s">
+      <span class="grid place-items-center w-14 h-14 rounded-2xl ${colorBg[p.color]} text-2xl shadow-pop shrink-0">${p.ic}</span>
+      <div class="flex-1 rounded-2xl bg-white border-4 border-white shadow-card px-5 py-3">
+        <div class="font-display font-extrabold text-grape-700">${p.t}</div>
+        <div class="text-sm font-bold ${p.done?'text-mint-600':'text-grape-400'}">${p.s}</div>
+      </div>
+    </div>`).join('<div class="h-3 w-1 mr-6 bg-grape-200 rounded-full"></div>');
+
+  stage.innerHTML = `
+    <div class="animate-pop text-center">
+      <div class="mx-auto w-28 h-28 grid place-items-center rounded-[2rem] bg-gradient-to-br from-grape-500 to-bubble-500 text-6xl shadow-bubbly animate-bob">🗺️</div>
+      <h1 class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700">خريطتك السحرية جاهزة!</h1>
+      <p class="mt-2 text-grape-500 font-medium">بناءً على إجابتك، رسمنا لك خطة المغامرة 👇</p>
+    </div>
+
+    <div class="mt-7 text-right">${gapBlock}</div>
+
+    <div class="mt-6 rounded-[2rem] bg-white border-[6px] border-white shadow-card p-6 sm:p-7 text-right">
+      <h3 class="font-display text-xl font-extrabold text-grape-700 flex items-center gap-2">🧗 مسار العلاج الخاص بك</h3>
+      <p class="text-grape-500 font-medium text-sm mt-1">خطوة بخطوة، من الأساس حتى الإتقان.</p>
+      <div class="mt-5 space-y-0">${planHTML}</div>
+    </div>
+
+    <!-- مقارنة سريعة: ماذا تعني كل إجابة؟ (شفافية تربوية) -->
+    <div class="mt-6 rounded-[2rem] bg-grape-100 p-6 text-right">
+      <h3 class="font-display text-lg font-extrabold text-grape-700">🔬 كيف يفكّر الاختبار؟</h3>
+      <p class="text-grape-600 font-medium text-sm mt-1">كل خيار في السؤال صُمّم ليكشف فجوة مختلفة:</p>
+      <div class="mt-3 grid sm:grid-cols-2 gap-2 text-sm">
+        <div class="rounded-xl bg-white p-3"><b class="text-grape-700">٢/٤ →</b> <span class="text-grape-600">جمع البسط والمقام معاً</span></div>
+        <div class="rounded-xl bg-white p-3"><b class="text-grape-700">¼ →</b> <span class="text-grape-600">الخلط مع الضرب</span></div>
+        <div class="rounded-xl bg-white p-3"><b class="text-grape-700">٢/٢ →</b> <span class="text-grape-600">عدم التبسيط (=١)</span></div>
+        <div class="rounded-xl bg-mint-100 p-3"><b class="text-mint-700">١ ✓ →</b> <span class="text-mint-700">الإتقان الكامل</span></div>
+      </div>
+    </div>
+
+    <div class="mt-7 flex flex-wrap gap-3 justify-center">
+      ${correct
+        ? `<a href="index.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">🏝️ تابع المغامرة</a>`
+        : `<a href="rescue.html" class="font-display inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-bubble-500 to-coral-500 btn-pop">🛟 ابدأ مهمة الإنقاذ الآن</a>`}
+      <button onclick="screenQuestion()" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">🔁 جرّب إجابة أخرى</button>
+    </div>
+    <p class="text-center mt-5 text-sm font-bold text-grape-400">إعداد المعلمة T. Wad Refae</p>
+  `;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* بدء */
+screenWelcome();
+</script>
+</body>
+</html>
