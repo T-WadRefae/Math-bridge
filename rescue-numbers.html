@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>مهمة إنقاذ الأعداد | جسر الرياضيات 🔢</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+<script>
+tailwind.config = { theme:{ extend:{
+  fontFamily:{ display:['"Baloo Bhaijaan 2"','sans-serif'], body:['Tajawal','sans-serif'] },
+  colors:{
+    grape:{100:'#efe7ff',300:'#c5a8ff',400:'#a880ff',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9'},
+    coral:{100:'#ffe4e0',300:'#ffab9e',500:'#ff6b5e',600:'#f0473a'},
+    sunny:{100:'#fff3cc',300:'#ffd95e',400:'#ffce2e',500:'#ffb800'},
+    mint:{100:'#d2fff0',300:'#7ff0cb',500:'#1fd9a3',600:'#0fb98a',700:'#0a9b73'},
+    sky:{100:'#d9f0ff',300:'#8ad6ff',500:'#22b0ff',600:'#0090e6'},
+    bubble:{100:'#ffe0f4',300:'#ff9ed8',500:'#ff4fb8',600:'#ed2aa0'},
+  },
+  boxShadow:{ pop:'0 6px 0 0 rgba(0,0,0,.16)', card:'0 12px 0 -4px rgba(0,0,0,.06),0 24px 48px -20px rgba(0,0,0,.18)', bubbly:'0 18px 50px -12px rgba(124,58,237,.35)' },
+  keyframes:{
+    bob:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-12px)'}},
+    wobble:{'0%,100%':{transform:'rotate(-5deg)'},'50%':{transform:'rotate(5deg)'}},
+    pop:{'0%':{transform:'scale(0)',opacity:'0'},'70%':{transform:'scale(1.12)'},'100%':{transform:'scale(1)',opacity:'1'}},
+    slideUp:{'0%':{transform:'translateY(30px)',opacity:'0'},'100%':{transform:'translateY(0)',opacity:'1'}},
+    shake:{'10%,90%':{transform:'translateX(-2px)'},'20%,80%':{transform:'translateX(4px)'},'30%,50%,70%':{transform:'translateX(-7px)'},'40%,60%':{transform:'translateX(7px)'}},
+  },
+  animation:{ bob:'bob 4s ease-in-out infinite', wobble:'wobble 3s ease-in-out infinite', pop:'pop .5s cubic-bezier(.34,1.56,.64,1) both', slideUp:'slideUp .6s cubic-bezier(.16,.84,.44,1) both', shake:'shake .5s' },
+}}};
+</script>
+<style>
+  body{font-family:'Tajawal',sans-serif; background:#fff9ef;}
+  .font-display{font-family:'Baloo Bhaijaan 2',sans-serif;}
+  ::selection{background:#ffd95e;color:#6d28d9;}
+  .sky-bg{background:radial-gradient(circle at 15% 15%,#d9f0ff 0,transparent 30%),radial-gradient(circle at 85% 12%,#ffe0f4 0,transparent 32%),radial-gradient(circle at 75% 85%,#d2fff0 0,transparent 34%),#fff9ef;}
+  .btn-pop{box-shadow:0 6px 0 0 rgba(0,0,0,.16); transition:transform .12s, box-shadow .12s;}
+  .btn-pop:active{transform:translateY(5px); box-shadow:0 1px 0 0 rgba(0,0,0,.16);}
+  .btn-pop:hover{transform:translateY(-2px); box-shadow:0 9px 0 0 rgba(0,0,0,.16);}
+  .blob{position:absolute;border-radius:42% 58% 63% 37%/41% 44% 56% 59%;filter:blur(3px);opacity:.4;}
+  .confetti{position:fixed;width:12px;height:14px;top:-20px;z-index:9999;pointer-events:none;border-radius:3px;}
+  .pip{transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+</style>
+</head>
+<body class="sky-bg text-grape-700 min-h-screen overflow-x-hidden">
+<header class="px-3 sm:px-5 pt-3 sticky top-0 z-40">
+  <div class="mx-auto max-w-3xl rounded-[1.4rem] bg-white/90 backdrop-blur border-4 border-white shadow-card px-4 py-3">
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="grid place-items-center w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-500 to-grape-500 text-white text-xl animate-wobble">🔢</span>
+        <span class="font-display text-base sm:text-lg font-extrabold text-grape-700">إنقاذ الأعداد</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <span class="font-display text-sm font-bold text-mint-600 bg-mint-100 px-3 py-1 rounded-full">⭐ <span id="stars">٠</span></span>
+        <a href="index.html" class="font-display text-sm font-bold text-grape-400 hover:text-coral-500">✕</a>
+      </div>
+    </div>
+    <div id="pips" class="mt-3 flex items-center gap-2"></div>
+  </div>
+</header>
+<main class="relative px-4 sm:px-6 py-8">
+  <div class="blob w-56 h-56 bg-sky-300 top-24 -right-12 animate-bob"></div>
+  <div class="blob w-52 h-52 bg-sunny-300 bottom-10 -left-10 animate-bob"></div>
+  <div id="stage" class="relative mx-auto max-w-3xl"></div>
+</main>
+<script>
+/* مهمة إنقاذ الأعداد — تعالج فجوة «القيمة المنزلية» — إعداد المعلمة T. Wad Refae */
+const stage=document.getElementById('stage');
+const STEPS=['intro','learn','practice1','practice2','challenge','done'];
+let stepIdx=0, stars=0;
+function toAr(n){return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});}
+function setStars(n){stars=n;document.getElementById('stars').textContent=toAr(n);}
+function renderPips(){
+  const labels=['🚀','💡','✏️','🧠','🏔️','🏆'];
+  document.getElementById('pips').innerHTML=STEPS.map(function(s,i){
+    const state=i<stepIdx?'done':i===stepIdx?'now':'todo';
+    const cls=state==='done'?'bg-mint-500 text-white':state==='now'?'bg-sky-500 text-white scale-110':'bg-grape-100 text-grape-300';
+    return '<div class="pip flex-1 flex flex-col items-center gap-1"><span class="grid place-items-center w-9 h-9 rounded-xl '+cls+' text-base shadow-pop">'+labels[i]+'</span><span class="h-1.5 w-full rounded-full '+(i<stepIdx?'bg-mint-400':'bg-grape-100')+'"></span></div>';
+  }).join('');
+}
+function confetti(big){
+  const cols=['#ffb800','#ff4fb8','#1fd9a3','#22b0ff','#8b5cf6','#ff6b5e'];
+  for(let i=0;i<(big?80:40);i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=cols[i%cols.length];const dur=1.6+Math.random()*1.4;c.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:'translateY(105vh) rotate('+(720*Math.random())+'deg)',opacity:.9}],{duration:dur*1000,easing:'cubic-bezier(.2,.6,.4,1)'});document.body.appendChild(c);setTimeout(function(){c.remove();},dur*1000);}
+}
+/* بطاقات المنازل: مئات/عشرات/آحاد */
+function placeCards(h,t,o,hl){
+  function card(val,label,key){
+    const on = hl===key;
+    const bg = on?'bg-sky-500 text-white scale-105':'bg-white text-grape-700';
+    return '<div class="flex flex-col items-center gap-1"><div class="grid place-items-center w-16 h-20 rounded-2xl border-4 border-white shadow-pop font-display text-3xl font-extrabold '+bg+'">'+toAr(val)+'</div><span class="text-xs font-bold '+(on?'text-sky-600':'text-grape-400')+'">'+label+'</span></div>';
+  }
+  return '<div class="flex items-center justify-center gap-3">'+card(h,'مئات','h')+card(t,'عشرات','t')+card(o,'آحاد','o')+'</div>';
+}
+function next(){stepIdx=Math.min(STEPS.length-1,stepIdx+1);render();}
+function render(){renderPips();window.scrollTo({top:0,behavior:'smooth'});SCREENS[STEPS[stepIdx]]();}
+
+const SCREENS={
+  intro:function(){
+    stage.innerHTML='<div class="text-center animate-pop">'+
+      '<div class="mx-auto w-28 h-28 grid place-items-center rounded-[2rem] bg-gradient-to-br from-sky-500 to-grape-500 text-6xl shadow-bubbly animate-bob">🔢</div>'+
+      '<h1 class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700">مهمة إنقاذ الأعداد!</h1>'+
+      '<p class="mt-3 text-lg text-grape-600/85 font-medium max-w-xl mx-auto">في اختبار البداية لاحظنا التباساً في <b class="text-coral-500">القيمة المنزلية</b> — أين يقف كل رقم وكم يساوي. سنوضّحها بالبطاقات! 🪙</p>'+
+      '<div class="mt-6 rounded-[2rem] bg-white border-4 border-white shadow-card p-6 text-right max-w-md mx-auto"><div class="font-display font-extrabold text-grape-700">🎯 هدف المهمة:</div><p class="mt-1 text-grape-600 font-medium">أن تعرف أن قيمة الرقم تعتمد على <b>مكانه</b>: آحاد، عشرات، مئات.</p></div>'+
+      '<button onclick="next()" class="font-display mt-7 inline-flex items-center gap-2 px-9 py-4 rounded-2xl text-white text-xl font-extrabold bg-gradient-to-l from-sky-500 to-grape-500 btn-pop">هيا ننقذ الأعداد! 🚀</button></div>';
+  },
+  learn:function(){
+    stage.innerHTML='<div class="animate-slideUp">'+
+      '<h2 class="font-display text-2xl sm:text-3xl font-extrabold text-grape-700 text-center">💡 الفكرة بالصور</h2>'+
+      '<div class="mt-6 rounded-[2rem] bg-white border-[6px] border-white shadow-card p-6 sm:p-8">'+
+        '<p class="font-display text-xl font-bold text-grape-700 text-center">خذ العدد <span class="text-sky-600">٤٣٧</span> — كل رقم له بيت! 🏠</p>'+
+        '<div class="mt-6">'+placeCards(4,3,7,'t')+'</div>'+
+        '<div class="mt-6 grid sm:grid-cols-3 gap-3 text-center">'+
+          '<div class="rounded-2xl bg-sky-100 p-4"><div class="font-display text-2xl font-extrabold text-sky-700">٤ → ٤٠٠</div><div class="text-sm font-bold text-grape-500">مئات</div></div>'+
+          '<div class="rounded-2xl bg-bubble-100 p-4 ring-4 ring-bubble-300"><div class="font-display text-2xl font-extrabold text-bubble-600">٣ → ٣٠</div><div class="text-sm font-bold text-grape-500">عشرات</div></div>'+
+          '<div class="rounded-2xl bg-mint-100 p-4"><div class="font-display text-2xl font-extrabold text-mint-700">٧ → ٧</div><div class="text-sm font-bold text-grape-500">آحاد</div></div>'+
+        '</div>'+
+        '<div class="mt-6 rounded-2xl bg-sunny-100 p-5"><div class="font-display font-extrabold text-grape-700">🔑 القاعدة الذهبية:</div><p class="mt-1 text-grape-600 font-medium">الرقم <b class="text-bubble-500">٣</b> في خانة العشرات لا يساوي ٣، بل <b>٣٠</b>. المكان يحدّد القيمة!</p></div>'+
+      '</div>'+
+      '<div class="mt-6 text-center"><button onclick="next()" class="font-display inline-flex items-center gap-2 px-9 py-4 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">فهمت! دعنا نتدرّب ✏️</button></div></div>';
+  },
+  practice1:function(){
+    renderPracticeQ({
+      title:'✏️ تدريب موجّه',
+      qHTML:'في العدد <b class="text-sky-600">٦٥٢</b> ، قيمة الرقم <b class="text-bubble-500">٥</b> ؟',
+      visual:placeCards(6,5,2,'t'),
+      hint:'الرقم ٥ يقف في بيت العشرات 🏠',
+      opts:[
+        {l:'٥٠', ok:true},
+        {l:'٥', ok:false, tip:'موقعه في العشرات، فقيمته ٥٠ وليست ٥.'},
+        {l:'٥٠٠', ok:false, tip:'٥٠٠ لو كان في خانة المئات. هنا هو في العشرات = ٥٠.'},
+      ],
+    });
+  },
+  practice2:function(){
+    renderPracticeQ({
+      title:'🧠 جرّب بنفسك',
+      qHTML:'في العدد <b class="text-sky-600">٨٠٩</b> ، قيمة الرقم <b class="text-bubble-500">٨</b> ؟',
+      visual:'',
+      hint:'بدون بطاقات هذه المرة — أنت تستطيع! 💪',
+      opts:[
+        {l:'٨٠٠', ok:true},
+        {l:'٨', ok:false, tip:'٨ تقف في خانة المئات، فقيمتها ٨٠٠.'},
+        {l:'٨٠', ok:false, tip:'٨٠ لو كان في العشرات. لكنه في المئات = ٨٠٠.'},
+      ],
+    });
+  },
+  challenge:function(){
+    renderPracticeQ({
+      title:'🏔️ التحدّي النهائي',
+      badge:'نفس سؤال البداية — لنرَ تطوّرك!',
+      qHTML:'في العدد <b class="text-sky-600">٤٣٧</b> ، قيمة الرقم <b class="text-bubble-500">٣</b> ؟',
+      visual:placeCards(4,3,7,'t'),
+      hint:'تذكّر بيوت الأرقام 🏠',
+      opts:[
+        {l:'٣٠', ok:true},
+        {l:'٣', ok:false, tip:'هذا الخطأ القديم! المكان (العشرات) يجعلها ٣٠.'},
+        {l:'٣٠٠', ok:false, tip:'٣٠٠ لخانة المئات. الرقم ٣ هنا في العشرات = ٣٠.'},
+      ],
+      isChallenge:true,
+    });
+  },
+  done:function(){
+    confetti(true);
+    stage.innerHTML='<div class="text-center animate-pop">'+
+      '<div class="relative mx-auto w-36 h-36 grid place-items-center rounded-[2.5rem] bg-gradient-to-br from-sunny-400 to-sky-500 text-7xl shadow-bubbly animate-bob">🏆</div>'+
+      '<h1 class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700">أنقذتَ الأعداد! 🎉</h1>'+
+      '<p class="mt-2 text-lg text-grape-600/85 font-medium">أتقنت القيمة المنزلية. الفجوة أُغلقت بنجاح!</p>'+
+      '<div class="mt-7 rounded-[2rem] bg-white border-[6px] border-sunny-300 shadow-card p-7 max-w-md mx-auto relative overflow-hidden">'+
+        '<span class="absolute text-6xl -top-2 -left-2 opacity-10">⭐</span>'+
+        '<div class="font-display text-sky-600 font-bold">شهادة إتقان</div>'+
+        '<div class="font-display text-2xl font-extrabold text-grape-700 mt-1">🔢 القيمة المنزلية</div>'+
+        '<div class="mt-4 flex items-center justify-center gap-3 text-4xl"><span class="animate-bob">⭐</span><span class="animate-bob" style="animation-delay:.15s">⭐</span><span class="animate-bob" style="animation-delay:.3s">⭐</span></div>'+
+        '<div class="mt-4 grid grid-cols-2 gap-3 text-sm"><div class="rounded-xl bg-mint-100 p-3"><div class="font-display font-extrabold text-mint-700">'+toAr(stars)+'/٣</div><div class="text-grape-500 font-bold">نجوم</div></div><div class="rounded-xl bg-sky-100 p-3"><div class="font-display font-extrabold text-sky-600">٪١٠٠</div><div class="text-grape-500 font-bold">إتقان</div></div></div>'+
+        '<div class="mt-4 text-xs font-bold text-grape-400">إشراف المعلمة T. Wad Refae</div></div>'+
+      '<div class="mt-6 rounded-2xl bg-grape-100 p-5 max-w-md mx-auto text-right"><div class="font-display font-extrabold text-grape-700">🗺️ المغامرة القادمة:</div><p class="mt-1 text-grape-600 font-medium">عالم الأعداد — مهارة «ترتيب العمليات الحسابية». فُتحت الآن! 🔓</p></div>'+
+      '<div class="mt-7 flex flex-wrap gap-3 justify-center">'+
+        '<a href="diagnose.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">🔮 عودة للتشخيص</a>'+
+        '<a href="index.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">🏝️ خريطة الجزيرة</a></div></div>';
+  },
+};
+function renderPracticeQ(cfg){
+  let solved=false;
+  let optsHTML='';
+  for(let i=0;i<cfg.opts.length;i++){
+    optsHTML+='<button data-i="'+i+'" class="pq-opt group font-display flex items-center justify-center w-full px-6 py-5 rounded-3xl bg-white border-4 border-grape-100 shadow-pop btn-pop text-2xl font-extrabold text-grape-700">'+cfg.opts[i].l+'</button>';
+  }
+  stage.innerHTML='<div class="animate-slideUp">'+
+    '<h2 class="font-display text-2xl sm:text-3xl font-extrabold text-grape-700 text-center">'+cfg.title+'</h2>'+
+    (cfg.badge?'<p class="text-center mt-1"><span class="font-display text-sm font-bold text-sky-600 bg-sky-100 px-3 py-1 rounded-full">'+cfg.badge+'</span></p>':'')+
+    '<div class="mt-5 rounded-[2.5rem] bg-white border-[6px] border-white shadow-card p-6 sm:p-8 text-center">'+
+      '<div class="font-display text-3xl sm:text-4xl font-extrabold text-grape-700 flex items-center justify-center flex-wrap gap-1">'+cfg.qHTML+'</div>'+
+      (cfg.visual?'<div class="mt-6">'+cfg.visual+'</div>':'')+
+      '<p class="mt-4 text-grape-500 font-medium">'+cfg.hint+'</p></div>'+
+    '<div class="mt-5 grid sm:grid-cols-3 gap-4">'+optsHTML+'</div>'+
+    '<div id="pqfb" class="mt-5"></div></div>';
+  stage.querySelectorAll('.pq-opt').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const i=+btn.dataset.i, o=cfg.opts[i];
+      if(o.ok){
+        if(solved)return; solved=true;
+        setStars(stars+1); confetti(cfg.isChallenge);
+        stage.querySelectorAll('.pq-opt').forEach(function(b){b.classList.add('pointer-events-none');});
+        btn.classList.remove('border-grape-100'); btn.classList.add('!border-mint-500','bg-mint-100','animate-pop');
+        document.getElementById('pqfb').innerHTML='<div class="animate-slideUp rounded-[2rem] bg-mint-100 border-4 border-mint-500 p-6 text-center"><div class="text-4xl animate-bob">🌟</div><h3 class="font-display text-xl font-extrabold text-mint-700 mt-1">'+(cfg.isChallenge?'بطل حقيقي! تخطّيت التحدّي!':'ممتاز! إجابة صحيحة!')+'</h3><p class="mt-1 text-grape-600 font-medium">عرفت قيمة الرقم من مكانه. بالضبط! 👏</p><button id="pqnext" class="font-display mt-4 inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">'+(cfg.isChallenge?'استلم شهادتك 🏆':'التالي ←')+'</button></div>';
+        document.getElementById('pqnext').addEventListener('click',next);
+        document.getElementById('pqfb').scrollIntoView({behavior:'smooth',block:'center'});
+      } else {
+        btn.classList.add('animate-shake','!border-coral-400','bg-coral-50');
+        setTimeout(function(){btn.classList.remove('animate-shake');},500);
+        document.getElementById('pqfb').innerHTML='<div class="animate-slideUp rounded-2xl bg-white border-4 border-coral-300 p-4 flex items-start gap-3"><span class="grid place-items-center w-10 h-10 rounded-xl bg-coral-100 text-xl shrink-0 animate-wobble">💡</span><div><div class="font-display font-bold text-coral-600">حاول مرة أخرى!</div><p class="text-grape-600 font-medium text-sm">'+o.tip+'</p></div></div>';
+      }
+    });
+  });
+}
+render();
+</script>
+</body>
+</html>
