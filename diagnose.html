@@ -80,10 +80,11 @@ tailwind.config = {
   <div id="stage" class="relative mx-auto max-w-3xl"></div>
 </main>
 
+<script src="curriculum.js"></script>
 <script>
 const stage = document.getElementById('stage');
-function frac(n,d){ return '<span class="frac"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>'; }
-function toAr(n){ return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];}); }
+const toAr = window.MB.toAr;
+const fx   = window.MB.frac;   // يحوّل رموز {{n/d}} إلى كسور
 
 function confetti(big){
   const cols=['#ffb800','#ff4fb8','#1fd9a3','#22b0ff','#8b5cf6','#ff6b5e'];
@@ -96,122 +97,66 @@ function confetti(big){
   }
 }
 
-const QUIZ = [
-  {
-    world:'numbers', wLabel:'🔢 عالم الأعداد', skill:'القيمة المنزلية',
-    promptHTML:'في العدد <b class="text-sky-600">٤٣٧</b> ، ماذا تساوي قيمة الرقم <b class="text-bubble-500">٣</b> ؟',
-    hint:'فكّر في خانة العشرات 🪙',
-    options:[
-      {label:'٣٠', ok:true},
-      {label:'٣',  ok:false, gap:'القيمة المنزلية', why:'٣ ليست مجرد "ثلاثة" هنا — موقعها في خانة العشرات يجعلها ٣٠.'},
-      {label:'٣٠٠',ok:false, gap:'القيمة المنزلية', why:'٣٠٠ هي قيمة خانة المئات. لكن ٣ تقع في خانة العشرات = ٣٠.'},
-      {label:'٧',  ok:false, gap:'القيمة المنزلية', why:'٧ هي رقم الآحاد. سؤالنا عن الرقم ٣ تحديداً.'}
-    ]
-  },
-  {
-    world:'numbers', wLabel:'🔢 عالم الأعداد', skill:'ترتيب العمليات',
-    promptHTML:'كم يساوي : <b class="text-sky-600">٢ + ٣ × ٤</b> ؟',
-    hint:'أيهما أولاً: الجمع أم الضرب؟ ✖️➕',
-    options:[
-      {label:'١٤', ok:true},
-      {label:'٢٠', ok:false, gap:'ترتيب العمليات', why:'يبدو أنك حسبت من اليسار: (٢+٣)×٤=٢٠. لكن الضرب يأتي قبل الجمع!'},
-      {label:'٩',  ok:false, gap:'ترتيب العمليات', why:'٩ قريبة لكن غير دقيقة — الصحيح: ٣×٤=١٢ ثم +٢ = ١٤.'},
-      {label:'٢٤', ok:false, gap:'ترتيب العمليات', why:'٢٤ = ٢×٣×٤. لكن العملية فيها جمع وضرب، نبدأ بالضرب فقط.'}
-    ]
-  },
-  {
-    world:'numbers', wLabel:'🔢 عالم الأعداد', skill:'الطرح بالاستلاف',
-    promptHTML:'كم يساوي : <b class="text-sky-600">٥٠٢ − ٢٧٨</b> ؟',
-    hint:'انتبه للاستلاف عبر الصفر 🤔',
-    options:[
-      {label:'٢٢٤', ok:true},
-      {label:'٢٣٤', ok:false, gap:'الطرح بالاستلاف', why:'خطأ شائع في الاستلاف عبر الصفر. الصحيح ٢٢٤.'},
-      {label:'٣٧٦', ok:false, gap:'الطرح بالاستلاف', why:'يبدو أنك طرحت الأصغر من الأكبر في كل خانة بدل الاستلاف.'},
-      {label:'٢٢٦', ok:false, gap:'الطرح بالاستلاف', why:'قريب جداً! تحقّق من خانة الآحاد بعد الاستلاف: ١٢−٨=٤.'}
-    ]
-  },
-  {
-    world:'fractions', wLabel:'🍰 عالم الكسور', skill:'جمع الكسور المتشابهة',
-    promptHTML:'كم يساوي : '+frac(1,2)+' <b class="text-coral-500">+</b> '+frac(1,2)+' ؟',
-    hint:'نصف + نصف = ؟ 🍎',
-    options:[
-      {label:'<span class="text-2xl">١</span>', ok:true},
-      {label:frac(2,4), ok:false, gap:'جمع الكسور المتشابهة', why:'جمعت البسط والمقام معاً (١+١ فوق و ٢+٢ تحت). المقام لا يُجمع!'},
-      {label:frac(1,4), ok:false, gap:'جمع الكسور المتشابهة', why:'هذا ضرب المقامات لا جمع. في الجمع نُبقي المقام.'},
-      {label:frac(2,2), ok:false, gap:'جمع الكسور المتشابهة', why:'البسط صحيح، لكن المقام يبقى ٢. و٢/٢ = ١ صحيح!'}
-    ]
-  },
-  {
-    world:'fractions', wLabel:'🍰 عالم الكسور', skill:'مقارنة الكسور',
-    promptHTML:'أيّ الكسرين أكبر : '+frac(1,3)+' أم '+frac(1,4)+' ؟',
-    hint:'قطعة من ٣ أكبر أم من ٤؟ 🍕',
-    options:[
-      {label:frac(1,3), ok:true},
-      {label:frac(1,4), ok:false, gap:'مقارنة الكسور', why:'فخ شائع! المقام الأكبر لا يعني كسراً أكبر. كلما زاد المقام صغرت القطعة.'},
-      {label:'متساويان', ok:false, gap:'مقارنة الكسور', why:'ليسا متساويين — ⅓ أكبر لأن تقسيم الشيء إلى ٣ يعطي قطعاً أكبر من تقسيمه إلى ٤.'}
-    ]
-  },
-  {
-    world:'fractions', wLabel:'🍰 عالم الكسور', skill:'كسر من كمية',
-    promptHTML:'كم يساوي : '+frac(1,4)+' من <b class="text-bubble-500">٢٠</b> ؟',
-    hint:'قسّم الـ٢٠ إلى ٤ مجموعات 🍬',
-    options:[
-      {label:'٥', ok:true},
-      {label:'٤', ok:false, gap:'كسر من كمية', why:'يبدو أنك أخذت المقام (٤) كإجابة. الصحيح: ٢٠÷٤ = ٥.'},
-      {label:'١٦',ok:false, gap:'كسر من كمية', why:'١٦ هي ثلاثة أرباع تقريباً. الربع = ٢٠÷٤ = ٥.'},
-      {label:'٨٠',ok:false, gap:'كسر من كمية', why:'ضربت بدل القسمة. "ربع من" يعني نقسم: ٢٠÷٤ = ٥.'}
-    ]
-  }
-];
-
+/* ============ الحالة ============ */
+let GRADE = 5;
+let QUIZ = [];          // مصفوفة مهارات (كائنات من SKILLS)
 let qIdx = 0, answered = false;
-const result = { numbers:{correct:0,total:0,gaps:{}}, fractions:{correct:0,total:0,gaps:{}} };
+let result = {};        // { world: {correct,total,gaps:{}} }
+
+/* ============ شاشة الترحيب + اختيار الصف ============ */
+function screenWelcome(){
+  document.getElementById('progress').classList.add('hidden');
+  const gradeBtns = window.GRADES.map(function(g){
+    return '<button onclick="startQuiz('+g+')" class="font-display grid place-items-center gap-1 py-5 rounded-3xl bg-white border-4 border-white shadow-card btn-pop">'+
+      '<span class="text-3xl font-extrabold text-grape-600">'+toAr(g)+'</span>'+
+      '<span class="text-xs font-bold text-grape-400">الصف</span></button>';
+  }).join('');
+  stage.innerHTML =
+    '<div class="text-center animate-pop">'+
+      '<div class="mx-auto w-32 h-32 grid place-items-center rounded-[2rem] bg-gradient-to-br from-sunny-300 to-coral-500 text-7xl shadow-bubbly animate-bob">🔮</div>'+
+      '<h1 class="font-display mt-6 text-4xl sm:text-5xl font-extrabold text-grape-700">اختبار البداية السحري!</h1>'+
+      '<p class="mt-3 text-lg text-grape-600/85 font-medium max-w-xl mx-auto">مرحباً أيها البطل! 👋 اختر <b class="text-bubble-500">صفّك</b> ونرسم لك خريطة مهاراتك عبر عوالم الرياضيات.<br/>كل إجابة — حتى الخاطئة — <b class="text-mint-600">ترسم لك خريطتك السحرية!</b></p>'+
+      '<div class="mt-8 grid grid-cols-5 gap-2 sm:gap-4 max-w-xl mx-auto">'+gradeBtns+'</div>'+
+      '<p class="mt-6 text-sm font-bold text-grape-400">اختبار قصير متوازن عبر العوالم — حسب صفّك</p>'+
+    '</div>';
+}
+
+function startQuiz(grade){
+  GRADE = grade;
+  QUIZ = window.MB.selectDiagnostic(grade, 8);
+  qIdx = 0;
+  result = {};
+  QUIZ.forEach(function(s){ if(!result[s.world]) result[s.world]={correct:0,total:0,gaps:{}}; });
+  screenQuestion();
+}
 
 function updateProgress(){
   document.getElementById('progress').classList.remove('hidden');
   const pct = Math.round((qIdx)/QUIZ.length*100);
   document.getElementById('progBar').style.width = pct+'%';
   document.getElementById('progLabel').textContent = 'السؤال '+toAr(qIdx+1)+' من '+toAr(QUIZ.length);
-  document.getElementById('worldLabel').textContent = QUIZ[qIdx].wLabel;
+  const w = window.WORLDS[QUIZ[qIdx].world];
+  document.getElementById('worldLabel').textContent = w.emoji+' '+w.name;
 }
 
-function screenWelcome(){
-  document.getElementById('progress').classList.add('hidden');
-  stage.innerHTML =
-    '<div class="text-center animate-pop">'+
-      '<div class="mx-auto w-32 h-32 grid place-items-center rounded-[2rem] bg-gradient-to-br from-sunny-300 to-coral-500 text-7xl shadow-bubbly animate-bob">🔮</div>'+
-      '<h1 class="font-display mt-6 text-4xl sm:text-5xl font-extrabold text-grape-700">اختبار البداية السحري!</h1>'+
-      '<p class="mt-3 text-lg text-grape-600/85 font-medium max-w-xl mx-auto">مرحباً أيها البطل! 👋 سنزور <b class="text-sky-600">عالم الأعداد</b> ثم <b class="text-bubble-500">عالم الكسور</b>.<br/>كل إجابة — حتى الخاطئة — <b class="text-mint-600">ترسم لك خريطتك السحرية!</b></p>'+
-      '<div class="mt-7 grid sm:grid-cols-3 gap-4 text-right">'+
-        '<div class="rounded-3xl bg-white border-4 border-white shadow-card p-5"><div class="text-3xl">🔢</div><div class="font-display font-extrabold mt-2 text-grape-700">عالم الأعداد</div><div class="text-sm text-grape-500 font-medium">٣ مهارات</div></div>'+
-        '<div class="rounded-3xl bg-white border-4 border-white shadow-card p-5"><div class="text-3xl">🍰</div><div class="font-display font-extrabold mt-2 text-grape-700">عالم الكسور</div><div class="text-sm text-grape-500 font-medium">٣ مهارات</div></div>'+
-        '<div class="rounded-3xl bg-white border-4 border-white shadow-card p-5"><div class="text-3xl">🗺️</div><div class="font-display font-extrabold mt-2 text-grape-700">خطة علاج</div><div class="text-sm text-grape-500 font-medium">صُمّمت لك</div></div>'+
-      '</div>'+
-      '<button onclick="startQuiz()" class="font-display mt-8 inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-white text-xl font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">لنبدأ! 🚀</button>'+
-      '<p class="mt-4 text-sm font-bold text-grape-400">٦ أسئلة — حوالي ٥ دقائق</p>'+
-    '</div>';
-}
-
-function startQuiz(){ qIdx=0; result.numbers={correct:0,total:0,gaps:{}}; result.fractions={correct:0,total:0,gaps:{}}; screenQuestion(); }
-
+/* ============ شاشة السؤال ============ */
 function screenQuestion(){
   answered=false; updateProgress();
-  const q = QUIZ[qIdx];
-  const worldColor = q.world==='numbers' ? 'bg-sky-100 text-sky-700' : 'bg-bubble-100 text-bubble-600';
+  const s = QUIZ[qIdx], q = s.q, w = window.WORLDS[s.world];
   const arLetters = ['أ','ب','ج','د'];
   let opts='';
   for(let i=0;i<q.options.length;i++){
     opts += '<button data-i="'+i+'" onclick="choose('+i+')" class="opt group font-display flex items-center justify-between gap-3 w-full px-6 py-5 rounded-3xl bg-white border-4 border-grape-100 shadow-pop btn-pop text-2xl font-extrabold text-grape-700">'+
       '<span class="grid place-items-center w-10 h-10 rounded-2xl bg-grape-100 text-grape-500 text-base shrink-0">'+arLetters[i]+'</span>'+
-      '<span class="flex-1 text-center">'+q.options[i].label+'</span>'+
+      '<span class="flex-1 text-center">'+fx(q.options[i].label)+'</span>'+
       '<span class="w-10"></span></button>';
   }
   stage.innerHTML =
     '<div class="animate-slideUp">'+
       '<div class="rounded-[2.5rem] bg-white border-[6px] border-white shadow-card p-7 sm:p-9 text-center relative overflow-hidden">'+
-        '<span class="inline-block px-4 py-1.5 rounded-full '+worldColor+' font-display font-bold text-sm">'+q.wLabel+' · '+q.skill+'</span>'+
-        '<div class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700 flex items-center justify-center flex-wrap gap-1">'+q.promptHTML+'</div>'+
-        '<p class="mt-4 text-grape-500 font-medium">'+q.hint+'</p>'+
+        '<span class="inline-block px-4 py-1.5 rounded-full '+w.soft+' '+w.text+' font-display font-bold text-sm">'+w.emoji+' '+w.name+' · '+s.name+'</span>'+
+        '<div class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700 flex items-center justify-center flex-wrap gap-1">'+fx(q.promptHTML)+'</div>'+
+        '<p class="mt-4 text-grape-500 font-medium">'+fx(q.hint)+'</p>'+
       '</div>'+
       '<div class="mt-5 grid sm:grid-cols-2 gap-4">'+opts+'</div>'+
       '<div id="feedback" class="mt-5"></div>'+
@@ -220,21 +165,23 @@ function screenQuestion(){
 
 function choose(i){
   if(answered) return; answered=true;
-  const q = QUIZ[qIdx], o = q.options[i];
+  const s = QUIZ[qIdx], q = s.q, o = q.options[i];
   const buttons = document.querySelectorAll('.opt');
   buttons.forEach(function(b){b.classList.add('pointer-events-none');});
-  result[q.world].total++;
+  result[s.world].total++;
   if(o.ok){
-    result[q.world].correct++;
+    result[s.world].correct++;
+    window.MB.recordDiag(GRADE, s.id, 'ok');
     buttons[i].classList.remove('border-grape-100'); buttons[i].classList.add('!border-mint-500','bg-mint-100','animate-pop');
     confetti();
-    feedbackBox(true, 'أحسنت! إجابة صحيحة 🎉', 'أتقنت هذه المهارة بثقة!');
+    feedbackBox(true, 'أحسنت! إجابة صحيحة 🎉', 'أتقنت مهارة «'+s.name+'» بثقة!');
   } else {
-    result[q.world].gaps[o.gap] = (result[q.world].gaps[o.gap]||0)+1;
+    result[s.world].gaps[o.gap] = (result[s.world].gaps[o.gap]||0)+1;
+    window.MB.recordDiag(GRADE, s.id, 'gap');
     buttons[i].classList.remove('border-grape-100'); buttons[i].classList.add('!border-coral-500','bg-coral-100','animate-shake');
     const ci = q.options.findIndex(function(x){return x.ok;});
     buttons[ci].classList.remove('border-grape-100'); buttons[ci].classList.add('!border-mint-400','bg-mint-50');
-    feedbackBox(false, 'اكتشفنا شيئاً مهماً 💡', o.why, o.gap);
+    feedbackBox(false, 'اكتشفنا شيئاً مهماً 💡', fx(o.why), o.gap);
   }
 }
 
@@ -261,46 +208,57 @@ function feedbackBox(ok, title, body, gap){
 
 function nextQ(){ if(qIdx < QUIZ.length-1){ qIdx++; screenQuestion(); } else { screenResult(); } }
 
+/* ============ شاشة النتيجة والتوجيه ============ */
 function screenResult(){
   document.getElementById('progBar').style.width='100%';
   document.getElementById('progress').classList.add('hidden');
   confetti(true);
-  const n = result.numbers, f = result.fractions;
-  const nPct = Math.round(n.correct/n.total*100);
-  const fPct = Math.round(f.correct/f.total*100);
-  const weakest = nPct <= fPct ? 'numbers' : 'fractions';
-  const gapsObj = result[weakest].gaps;
-  const topGap = Object.keys(gapsObj).sort(function(a,b){return gapsObj[b]-gapsObj[a];})[0] || null;
-  const cfg = weakest==='numbers'
-    ? { emoji:'🔢', name:'عالم الأعداد', pct:nPct, link:'rescue-numbers.html', btn:'🔢 ابدأ إنقاذ الأعداد' }
-    : { emoji:'🍰', name:'عالم الكسور', pct:fPct, link:'rescue.html', btn:'🍰 ابدأ إنقاذ الكسور' };
 
-  function worldBar(emoji,label,pct,color){
-    const bar = {sky:'bg-sky-500',bubble:'bg-bubble-500'}[color];
-    return '<div><div class="flex justify-between font-display font-bold text-grape-600"><span>'+emoji+' '+label+'</span><span>'+toAr(pct)+'٪</span></div>'+
-      '<div class="mt-1.5 h-4 rounded-full bg-grape-100 overflow-hidden"><div class="h-full rounded-full '+bar+'" style="width:'+pct+'%"></div></div></div>';
-  }
-  function gapList(obj){
-    const ks=Object.keys(obj);
-    if(!ks.length) return '<li class="flex items-center gap-2 text-mint-700 font-bold">✅ لا فجوات — رائع!</li>';
-    return ks.map(function(k){return '<li class="flex items-center gap-2"><span>🎯</span><span class="font-medium text-grape-600">'+k+'</span></li>';}).join('');
+  // نسبة كل عالم
+  const worlds = Object.keys(result);
+  const pct = {};
+  worlds.forEach(function(w){ const r=result[w]; pct[w]= r.total? Math.round(r.correct/r.total*100):0; });
+
+  // العالم الأضعف
+  let weakest = worlds[0];
+  worlds.forEach(function(w){ if(pct[w] < pct[weakest]) weakest = w; });
+
+  // المهارة الأولى بالعلاج: أول مهارة متعثّرة في العالم الأضعف
+  const weakSkills = QUIZ.filter(function(s){ return s.world===weakest; });
+  let targetSkill = null;
+  for(const s of weakSkills){ if((window.MB.load().skills[s.id]||{}).diag==='gap'){ targetSkill=s; break; } }
+  if(!targetSkill) targetSkill = weakSkills[0];
+
+  const w = window.WORLDS[weakest];
+  const rescueLink = (targetSkill.richPage && targetSkill.richPage.length)
+      ? targetSkill.richPage
+      : 'rescue-skill.html?id='+targetSkill.id;
+
+  function worldCard(wk){
+    const wi = window.WORLDS[wk], p = pct[wk];
+    const g = result[wk].gaps, gk = Object.keys(g);
+    const gaps = gk.length
+      ? gk.map(function(k){return '<li class="flex items-center gap-2"><span>🎯</span><span class="font-medium text-grape-600">'+k+'</span></li>';}).join('')
+      : '<li class="flex items-center gap-2 text-mint-700 font-bold">✅ لا فجوات — رائع!</li>';
+    return '<div class="rounded-[2rem] '+wi.soft+' border-4 border-white shadow-card p-5">'+
+      '<div class="flex items-center justify-between">'+
+        '<h3 class="font-display font-extrabold '+wi.text+'">'+wi.emoji+' '+wi.name+'</h3>'+
+        '<span class="font-display font-bold '+wi.text+'">'+toAr(p)+'٪</span></div>'+
+      '<div class="mt-2 h-3 rounded-full bg-white/70 overflow-hidden"><div class="h-full rounded-full '+wi.chip+'" style="width:'+p+'%"></div></div>'+
+      '<ul class="mt-3 space-y-1.5 text-sm">'+gaps+'</ul></div>';
   }
 
   stage.innerHTML =
     '<div class="text-center animate-pop">'+
       '<div class="mx-auto w-28 h-28 grid place-items-center rounded-[2rem] bg-gradient-to-br from-grape-500 to-bubble-500 text-6xl shadow-bubbly animate-bob">🗺️</div>'+
       '<h1 class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700">خريطتك السحرية جاهزة!</h1>'+
-      '<p class="mt-2 text-grape-500 font-medium">هذه نتيجتك في العالمَين 👇</p></div>'+
-    '<div class="mt-6 rounded-[2rem] bg-white border-[6px] border-white shadow-card p-6 sm:p-7 space-y-5">'+worldBar('🔢','عالم الأعداد',nPct,'sky')+worldBar('🍰','عالم الكسور',fPct,'bubble')+'</div>'+
-    '<div class="mt-5 grid sm:grid-cols-2 gap-4">'+
-      '<div class="rounded-[2rem] bg-sky-100 border-4 border-white shadow-card p-5"><h3 class="font-display font-extrabold text-sky-700">🔢 فجوات الأعداد</h3><ul class="mt-3 space-y-2 text-sm">'+gapList(n.gaps)+'</ul></div>'+
-      '<div class="rounded-[2rem] bg-bubble-100 border-4 border-white shadow-card p-5"><h3 class="font-display font-extrabold text-bubble-600">🍰 فجوات الكسور</h3><ul class="mt-3 space-y-2 text-sm">'+gapList(f.gaps)+'</ul></div>'+
-    '</div>'+
+      '<p class="mt-2 text-grape-500 font-medium">نتيجتك في عوالم الصف '+toAr(GRADE)+' 👇</p></div>'+
+    '<div class="mt-6 grid sm:grid-cols-2 gap-4">'+ worlds.map(worldCard).join('') +'</div>'+
     '<div class="mt-6 rounded-[2rem] bg-gradient-to-br from-grape-600 to-bubble-500 text-white border-[6px] border-white shadow-bubbly p-7 text-center">'+
-      '<div class="text-5xl animate-bob">'+cfg.emoji+'</div>'+
-      '<h2 class="font-display text-2xl font-extrabold mt-2">نبدأ العلاج من '+cfg.name+'!</h2>'+
-      '<p class="mt-2 text-white/90 font-medium">إنه عالمك الأضعف حالياً ('+toAr(cfg.pct)+'٪)'+(topGap?'، ونبدأ بمهارة «'+topGap+'»':'')+'. لنقوّيه أولاً! 💪</p>'+
-      '<a href="'+cfg.link+'" class="font-display mt-5 inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-grape-700 text-lg font-extrabold bg-white btn-pop">'+cfg.btn+'</a></div>'+
+      '<div class="text-5xl animate-bob">'+w.emoji+'</div>'+
+      '<h2 class="font-display text-2xl font-extrabold mt-2">نبدأ العلاج من '+w.name+'!</h2>'+
+      '<p class="mt-2 text-white/90 font-medium">إنه عالمك الأضعف حالياً ('+toAr(pct[weakest])+'٪)، ونبدأ بمهارة «'+targetSkill.name+'». لنقوّيه أولاً! 💪</p>'+
+      '<a href="'+rescueLink+'" class="font-display mt-5 inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-grape-700 text-lg font-extrabold bg-white btn-pop">🚑 ابدأ مهمة الإنقاذ</a></div>'+
     '<div class="mt-6 flex flex-wrap gap-3 justify-center">'+
       '<button onclick="screenWelcome()" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">🔁 إعادة الاختبار</button>'+
       '<a href="index.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">🏝️ خريطة الجزيرة</a></div>'+

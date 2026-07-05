@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>مهمة إنقاذ | جسر الرياضيات 🚑</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { display:['"Baloo Bhaijaan 2"','sans-serif'], body:['Tajawal','sans-serif'] },
+    colors: {
+      grape:{100:'#efe7ff',300:'#c5a8ff',400:'#a880ff',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9'},
+      coral:{100:'#ffe4e0',300:'#ffab9e',500:'#ff6b5e',600:'#f0473a'},
+      sunny:{100:'#fff3cc',300:'#ffd95e',400:'#ffce2e',500:'#ffb800'},
+      mint:{100:'#d2fff0',300:'#7ff0cb',500:'#1fd9a3',600:'#0fb98a',700:'#0a9b73'},
+      sky:{100:'#d9f0ff',300:'#8ad6ff',500:'#22b0ff',600:'#0090e6'},
+      bubble:{100:'#ffe0f4',300:'#ff9ed8',500:'#ff4fb8',600:'#ed2aa0'},
+    },
+    boxShadow:{ pop:'0 6px 0 0 rgba(0,0,0,.16)', card:'0 12px 0 -4px rgba(0,0,0,.06),0 24px 48px -20px rgba(0,0,0,.18)', bubbly:'0 18px 50px -12px rgba(124,58,237,.35)' },
+    keyframes:{
+      bob:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-12px)'}},
+      wobble:{'0%,100%':{transform:'rotate(-5deg)'},'50%':{transform:'rotate(5deg)'}},
+      pop:{'0%':{transform:'scale(0)',opacity:'0'},'70%':{transform:'scale(1.12)'},'100%':{transform:'scale(1)',opacity:'1'}},
+      slideUp:{'0%':{transform:'translateY(30px)',opacity:'0'},'100%':{transform:'translateY(0)',opacity:'1'}},
+      shake:{'10%,90%':{transform:'translateX(-2px)'},'20%,80%':{transform:'translateX(4px)'},'30%,50%,70%':{transform:'translateX(-7px)'},'40%,60%':{transform:'translateX(7px)'}},
+    },
+    animation:{ bob:'bob 4s ease-in-out infinite', wobble:'wobble 3s ease-in-out infinite', pop:'pop .5s cubic-bezier(.34,1.56,.64,1) both', slideUp:'slideUp .6s cubic-bezier(.16,.84,.44,1) both', shake:'shake .5s' },
+  }},
+};
+</script>
+<style>
+  body{font-family:'Tajawal',sans-serif; background:#fff9ef;}
+  .font-display{font-family:'Baloo Bhaijaan 2',sans-serif;}
+  ::selection{background:#ffd95e;color:#6d28d9;}
+  .sky-bg{background:radial-gradient(circle at 15% 15%,#ffe0f4 0,transparent 30%),radial-gradient(circle at 85% 12%,#d9f0ff 0,transparent 32%),radial-gradient(circle at 75% 85%,#d2fff0 0,transparent 34%),#fff9ef;}
+  .btn-pop{box-shadow:0 6px 0 0 rgba(0,0,0,.16); transition:transform .12s, box-shadow .12s;}
+  .btn-pop:active{transform:translateY(5px); box-shadow:0 1px 0 0 rgba(0,0,0,.16);}
+  .btn-pop:hover{transform:translateY(-2px); box-shadow:0 9px 0 0 rgba(0,0,0,.16);}
+  .blob{position:absolute;border-radius:42% 58% 63% 37%/41% 44% 56% 59%;filter:blur(3px);opacity:.45;}
+  .confetti{position:fixed;width:12px;height:14px;top:-20px;z-index:9999;pointer-events:none;border-radius:3px;}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle;margin:0 .15em;}
+  .frac .num{padding:0 .35em;}
+  .frac .den{padding:.06em .35em 0;border-top:.16em solid currentColor;}
+</style>
+</head>
+
+<body class="sky-bg text-grape-700 min-h-screen overflow-x-hidden">
+
+<header class="px-3 sm:px-5 pt-3 sticky top-0 z-40">
+  <div class="mx-auto max-w-3xl rounded-[1.4rem] bg-white/90 backdrop-blur border-4 border-white shadow-card px-4 py-3">
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="grid place-items-center w-10 h-10 rounded-2xl bg-gradient-to-br from-grape-500 to-bubble-500 text-white animate-wobble">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3-5 6-5 9 0s6 5 9 0"/><path d="M3 17v3M21 17v3"/></svg>
+        </span>
+        <span class="font-display text-lg font-extrabold text-grape-700">جسر الرياضيات</span>
+      </a>
+      <a href="diagnose.html" class="font-display text-sm font-bold text-grape-400 hover:text-coral-500 transition">✕ خروج</a>
+    </div>
+    <div id="pips" class="mt-3 flex items-center gap-1.5"></div>
+  </div>
+</header>
+
+<main class="relative px-4 sm:px-6 py-8">
+  <div class="blob w-60 h-60 bg-sunny-300 top-20 -right-12 animate-bob"></div>
+  <div class="blob w-52 h-52 bg-mint-300 bottom-10 -left-10 animate-bob"></div>
+  <div id="stage" class="relative mx-auto max-w-3xl"></div>
+</main>
+
+<script src="curriculum.js"></script>
+<script>
+const stage = document.getElementById('stage');
+const toAr = window.MB.toAr, fx = window.MB.frac;
+
+function confetti(big){
+  const cols=['#ffb800','#ff4fb8','#1fd9a3','#22b0ff','#8b5cf6','#ff6b5e'];
+  for(let i=0;i<(big?70:30);i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=cols[i%cols.length];
+    const dur=1.6+Math.random()*1.3;
+    c.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:'translateY(105vh) rotate('+(720*Math.random())+'deg)',opacity:.9}],{duration:dur*1000,easing:'cubic-bezier(.2,.6,.4,1)'});
+    document.body.appendChild(c); setTimeout(function(){c.remove();},dur*1000);
+  }
+}
+
+/* ---- تحميل المهارة من الرابط ---- */
+function qs(k){ return new URLSearchParams(location.search).get(k); }
+const SKILL = window.MB.byId(qs('id'));
+
+if(!SKILL){
+  stage.innerHTML = '<div class="text-center animate-pop mt-10">'+
+    '<div class="text-6xl">🧭</div>'+
+    '<h1 class="font-display mt-4 text-3xl font-extrabold text-grape-700">لم نجد المهمة</h1>'+
+    '<p class="mt-2 text-grape-500 font-medium">لنبدأ من اختبار البداية ونختر لك المهمة المناسبة.</p>'+
+    '<a href="diagnose.html" class="font-display mt-6 inline-flex px-8 py-4 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">🔮 اختبار البداية</a></div>';
+} else {
+  runMission();
+}
+
+function runMission(){
+  const W = window.WORLDS[SKILL.world];
+  const STEPS = ['intro','learn','practice1','practice2','challenge','done'];
+  const labels = ['👋','📘','✍️','🧠','🏁','🏆'];
+  let stepIdx = 0, stars = 0;
+
+  function renderPips(){
+    document.getElementById('pips').innerHTML = STEPS.map(function(_,i){
+      const cls = i<stepIdx ? W.chip+' text-white' : i===stepIdx ? 'bg-white '+W.text+' ring-4 ring-'+'grape-100' : 'bg-grape-100 text-grape-400';
+      return '<div class="flex-1 flex flex-col items-center gap-1">'+
+        '<span class="grid place-items-center w-9 h-9 rounded-xl '+cls+' text-base shadow-pop">'+labels[i]+'</span>'+
+        '<span class="h-1.5 w-full rounded-full '+(i<stepIdx?'bg-mint-400':'bg-grape-100')+'"></span></div>';
+    }).join('');
+  }
+  function go(){ stepIdx=Math.min(STEPS.length-1,stepIdx+1); render(); }
+  function render(){ renderPips(); window.scrollTo({top:0,behavior:'smooth'}); SCREENS[STEPS[stepIdx]](); }
+
+  /* ------ مولّد شاشة سؤال (يُستخدم للتدريب والتحدّي) ------ */
+  function questionScreen(item, opts){
+    // opts: { badge, title, subtitle, onPass, passLabel }
+    let answered=false;
+    const arLetters=['أ','ب','ج','د'];
+    let btns='';
+    for(let i=0;i<item.options.length;i++){
+      btns += '<button data-i="'+i+'" class="optq group font-display flex items-center justify-between gap-3 w-full px-6 py-5 rounded-3xl bg-white border-4 border-grape-100 shadow-pop btn-pop text-2xl font-extrabold text-grape-700">'+
+        '<span class="grid place-items-center w-10 h-10 rounded-2xl bg-grape-100 text-grape-500 text-base shrink-0">'+arLetters[i]+'</span>'+
+        '<span class="flex-1 text-center">'+fx(item.options[i].label)+'</span><span class="w-10"></span></button>';
+    }
+    stage.innerHTML =
+      '<div class="animate-slideUp">'+
+        '<div class="rounded-[2.5rem] bg-white border-[6px] border-white shadow-card p-7 sm:p-9 text-center">'+
+          '<span class="inline-block px-4 py-1.5 rounded-full '+W.soft+' '+W.text+' font-display font-bold text-sm">'+opts.badge+'</span>'+
+          '<div class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700 flex items-center justify-center flex-wrap gap-1">'+fx(item.promptHTML)+'</div>'+
+          (item.hint?'<p class="mt-4 text-grape-500 font-medium">'+fx(item.hint)+'</p>':'')+
+        '</div>'+
+        '<div class="mt-5 grid sm:grid-cols-2 gap-4">'+btns+'</div>'+
+        '<div id="qfb" class="mt-5"></div>'+
+      '</div>';
+
+    document.querySelectorAll('.optq').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(answered) return;
+        const i=+b.dataset.i, o=item.options[i];
+        if(o.ok){
+          answered=true;
+          document.querySelectorAll('.optq').forEach(function(x){x.classList.add('pointer-events-none');});
+          b.classList.remove('border-grape-100'); b.classList.add('!border-mint-500','bg-mint-100','animate-pop');
+          confetti();
+          document.getElementById('qfb').innerHTML =
+            '<div class="animate-slideUp rounded-[2rem] bg-mint-100 border-4 border-mint-500 p-6 text-center">'+
+              '<div class="text-4xl animate-bob">🌟</div>'+
+              '<h3 class="font-display text-xl font-extrabold text-mint-700 mt-1">أحسنت!</h3>'+
+              '<button id="passBtn" class="font-display mt-4 inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">'+opts.passLabel+'</button></div>';
+          document.getElementById('passBtn').addEventListener('click', opts.onPass);
+          document.getElementById('qfb').scrollIntoView({behavior:'smooth',block:'center'});
+        } else {
+          // تعلّم بلا عقاب: تلميح وإعادة محاولة
+          b.classList.remove('border-grape-100'); b.classList.add('!border-coral-500','bg-coral-100','animate-shake');
+          b.classList.add('pointer-events-none');
+          document.getElementById('qfb').innerHTML =
+            '<div class="animate-slideUp rounded-[2rem] bg-white border-4 border-coral-300 p-5">'+
+              '<div class="flex items-start gap-3"><span class="grid place-items-center w-11 h-11 rounded-2xl bg-coral-100 text-2xl shrink-0 animate-wobble">💡</span>'+
+              '<div><h3 class="font-display font-extrabold text-coral-600">فكرة مفيدة</h3><p class="mt-1 text-grape-600 font-medium">'+fx(o.why)+'</p>'+
+              '<p class="mt-2 text-sm font-bold text-grape-400">جرّب مرة أخرى 💪</p></div></div></div>';
+          document.getElementById('qfb').scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      });
+    });
+  }
+
+  /* ------ الشاشات ------ */
+  const SCREENS = {
+    intro:function(){
+      stage.innerHTML =
+        '<div class="text-center animate-pop">'+
+          '<div class="mx-auto w-32 h-32 grid place-items-center rounded-[2rem] '+W.chip+' text-white text-7xl shadow-bubbly animate-bob">'+W.emoji+'</div>'+
+          '<span class="inline-block mt-6 px-4 py-1.5 rounded-full '+W.soft+' '+W.text+' font-display font-bold">'+W.emoji+' '+W.name+' · الصف '+toAr(SKILL.grade)+'</span>'+
+          '<h1 class="font-display mt-3 text-3xl sm:text-4xl font-extrabold text-grape-700">مهمة إنقاذ: '+SKILL.name+'</h1>'+
+          '<p class="mt-3 text-lg text-grape-600/85 font-medium max-w-xl mx-auto">سنعبر معاً ٦ خطوات قصيرة: نفهم الفكرة، نتدرّب، ثم نتحدّى أنفسنا وننال ٣ نجوم! لا خوف من الخطأ — كل محاولة تقرّبنا للإتقان. 🌟</p>'+
+          '<button id="startBtn" class="font-display mt-8 inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-white text-xl font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">لنبدأ! 🚀</button>'+
+        '</div>';
+      document.getElementById('startBtn').addEventListener('click', go);
+    },
+    learn:function(){
+      stage.innerHTML =
+        '<div class="animate-slideUp">'+
+          '<div class="rounded-[2.5rem] bg-white border-[6px] border-white shadow-card p-7 sm:p-9">'+
+            '<span class="inline-block px-4 py-1.5 rounded-full '+W.soft+' '+W.text+' font-display font-bold text-sm">📘 نفهم الفكرة</span>'+
+            '<h2 class="font-display mt-4 text-2xl font-extrabold text-grape-700">'+SKILL.name+'</h2>'+
+            '<div class="mt-4 text-xl leading-relaxed text-grape-700 font-medium bg-sunny-100 rounded-2xl p-5">'+fx(SKILL.learnHTML)+'</div>'+
+            (SKILL.richPage && SKILL.richPage.length ? '<a href="'+SKILL.richPage+'" class="font-display mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-extrabold '+W.text+' bg-white border-2 border-grape-100 btn-pop">🎬 التجربة البصرية الكاملة</a>' : '')+
+          '</div>'+
+          '<button id="learnBtn" class="font-display mt-5 w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-mint-500 to-sky-500 btn-pop">فهمت، لنتدرّب ✍️</button>'+
+        '</div>';
+      document.getElementById('learnBtn').addEventListener('click', go);
+    },
+    practice1:function(){
+      questionScreen(SKILL.practice[0], { badge:'✍️ تدريب موجّه', passLabel:'التدريب التالي ←',
+        onPass:function(){ stars++; go(); } });
+    },
+    practice2:function(){
+      questionScreen(SKILL.practice[1] || SKILL.practice[0], { badge:'🧠 تدريب ذاتي', passLabel:'إلى التحدّي 🏁',
+        onPass:function(){ stars++; go(); } });
+    },
+    challenge:function(){
+      questionScreen(SKILL.q, { badge:'🏁 التحدّي الأخير', passLabel:'شاهد شهادتي 🏆',
+        onPass:function(){ stars++; go(); } });
+    },
+    done:function(){
+      confetti(true);
+      window.MB.recordMastery(SKILL.id, Math.max(3, stars));
+      // المهارة التالية غير المتقنة في نفس الصف
+      const st = window.MB.load();
+      const next = window.MB.byGrade(SKILL.grade).filter(function(s){
+        return s.id!==SKILL.id && !(st.skills[s.id]||{}).mastered;
+      })[0];
+      const starRow = [0,1,2].map(function(i){
+        return '<span class="text-5xl '+(i<Math.max(3,stars)?'':'opacity-25')+' animate-bob" style="animation-delay:'+(i*0.15)+'s">⭐</span>';
+      }).join('');
+      stage.innerHTML =
+        '<div class="text-center animate-pop">'+
+          '<div class="mx-auto w-28 h-28 grid place-items-center rounded-[2rem] bg-gradient-to-br from-sunny-400 to-coral-500 text-6xl shadow-bubbly animate-bob">🏆</div>'+
+          '<h1 class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700">أتقنت المهارة!</h1>'+
+          '<p class="mt-2 text-grape-500 font-medium">«'+SKILL.name+'» — '+W.emoji+' '+W.name+'</p>'+
+          '<div class="mt-5 flex justify-center gap-3">'+starRow+'</div>'+
+          '<div class="mt-6 rounded-[2rem] bg-mint-100 border-4 border-white shadow-card p-5 text-grape-700 font-medium">تم تسجيل إتقانك في خريطة رحلتك 🗺️ لِتظهر للمعلّمة.</div>'+
+          '<div class="mt-6 flex flex-wrap gap-3 justify-center">'+
+            (next ? '<a href="'+((next.richPage&&next.richPage.length)?next.richPage:'rescue-skill.html?id='+next.id)+'" class="font-display inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">المهارة التالية: '+next.name+' ←</a>' : '')+
+            '<a href="diagnose.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">🔮 إعادة التشخيص</a>'+
+            '<a href="index.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">🏝️ الجزيرة</a>'+
+          '</div>'+
+          '<p class="mt-6 text-sm font-bold text-grape-400">إعداد المعلمة T. Wad Refae</p>'+
+        '</div>';
+    },
+  };
+
+  render();
+}
+</script>
+</body>
+</html>

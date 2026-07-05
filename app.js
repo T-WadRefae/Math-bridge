@@ -38,7 +38,7 @@ if (worldsGrid) {
 /* -------- مهام الإنقاذ -------- */
 const RESCUE = [
   { emoji:'🛟', tag:'جاهزة الآن', bg:'bg-bubble-100', chip:'bg-bubble-500', title:'إنقاذ الكسور',       desc:'نعيد بناء مفهوم الكسر من جذوره بالصور.', link:'rescue.html' },
-  { emoji:'🧩', tag:'',            bg:'bg-coral-100',  chip:'bg-coral-500',  title:'إنقاذ الجبر',        desc:'من المتغيّر إلى حل المعادلة كلغز ممتع.', link:'diagnose.html' },
+  { emoji:'🧩', tag:'جاهزة الآن', bg:'bg-coral-100',  chip:'bg-coral-500',  title:'إنقاذ الجبر',        desc:'من المتغيّر إلى حل المعادلة كلغز ممتع.', link:'rescue-skill.html?id=lin-eq' },
   { emoji:'🏗️', tag:'',           bg:'bg-sunny-100',  chip:'bg-sunny-500',  title:'تأسيس الصف السابع', desc:'جسر يربط المرحلة الدنيا بالعليا.', link:'diagnose.html' },
   { emoji:'🎓', tag:'',            bg:'bg-mint-100',   chip:'bg-mint-500',   title:'قبل الثانوية',      desc:'تمكين شامل يجهّزك للمرحلة القادمة.', link:'diagnose.html' },
 ];
