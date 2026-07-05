@@ -946,27 +946,103 @@ window.MB = {
     return out;
   },
 
-  /* ---- حفظ التقدّم محلياً (يغذّي «رحلتي» ولوحة المعلّم لاحقاً) ---- */
-  load:function(){
-    try { return JSON.parse(localStorage.getItem('mb_state')) || {grade:null,skills:{}}; }
-    catch(e){ return {grade:null,skills:{}}; }
+  /* ============================================================
+     التخزين المحلي متعدّد الطلاب + المصادقة
+     ⚠️ نموذج تعليمي: تُحفظ الحسابات والتقدّم في متصفّح الجهاز فقط
+     (localStorage) — ليست حماية أمنية ولا تُزامَن بين الأجهزة.
+     الحماية الحقيقية تتطلب خادماً وتسجيل دخول فعلياً لاحقاً.
+     ============================================================ */
+  db:function(){
+    try { return JSON.parse(localStorage.getItem('mb_db')) || {students:{},current:null}; }
+    catch(e){ return {students:{},current:null}; }
   },
-  save:function(st){ try{ localStorage.setItem('mb_state', JSON.stringify(st)); }catch(e){} },
-  // يسجّل نتيجة تشخيص مهارة: 'ok' أتقنها في الفحص، 'gap' فجوة
+  _saveDb:function(db){ try{ localStorage.setItem('mb_db', JSON.stringify(db)); }catch(e){} },
+  // سجلّ الطالب الحالي (أو حساب ضيف مؤقّت إن لم يسجّل أحد الدخول)
+  _cur:function(){
+    var db = window.MB.db();
+    var id = db.current || '__guest__';
+    if(!db.students[id]){
+      db.students[id] = { id:id, name:(id==='__guest__'?'ضيف':id), password:'',
+        grade:null, guest:(id==='__guest__'), skills:{}, createdAt:Date.now() };
+    }
+    return { db:db, id:id, s:db.students[id] };
+  },
+
+  /* ---- توافق مع التشخيص والعلاج: يقرأ/يكتب لسجلّ الطالب الحالي ---- */
+  load:function(){ var c=window.MB._cur(); return {grade:c.s.grade, skills:c.s.skills}; },
   recordDiag:function(grade, skillId, status){
-    var st = window.MB.load(); st.grade = grade;
-    st.skills[skillId] = st.skills[skillId] || {};
-    st.skills[skillId].diag = status;
-    st.skills[skillId].t = Date.now();
-    window.MB.save(st);
+    var c=window.MB._cur(); c.s.grade=grade;
+    c.s.skills[skillId]=c.s.skills[skillId]||{};
+    c.s.skills[skillId].diag=status; c.s.skills[skillId].t=Date.now();
+    window.MB._saveDb(c.db);
   },
-  // يسجّل إتقان مهارة بعد مهمة العلاج
   recordMastery:function(skillId, stars){
-    var st = window.MB.load();
-    st.skills[skillId] = st.skills[skillId] || {};
-    st.skills[skillId].mastered = true;
-    st.skills[skillId].stars = stars || 3;
-    st.skills[skillId].t = Date.now();
-    window.MB.save(st);
+    var c=window.MB._cur();
+    c.s.skills[skillId]=c.s.skills[skillId]||{};
+    c.s.skills[skillId].mastered=true; c.s.skills[skillId].stars=stars||3;
+    c.s.skills[skillId].t=Date.now();
+    window.MB._saveDb(c.db);
+  },
+
+  /* ---- إدارة الطلاب (لوحة المعلّم) ---- */
+  students:function(){
+    var db=window.MB.db();
+    return Object.keys(db.students).filter(function(k){return !db.students[k].guest;})
+      .map(function(k){return db.students[k];})
+      .sort(function(a,b){return (a.name||'').localeCompare(b.name||'','ar');});
+  },
+  addStudent:function(name,password,grade){
+    var db=window.MB.db(); var id=(name||'').trim();
+    if(!id) return {err:'اسم الطالب مطلوب'};
+    if(db.students[id] && !db.students[id].guest) return {err:'يوجد طالب بهذا الاسم'};
+    var prev=db.students[id]||{};
+    db.students[id]={ id:id, name:id, password:(password||''), grade:(grade?+grade:null),
+      guest:false, skills:prev.skills||{}, createdAt:prev.createdAt||Date.now() };
+    window.MB._saveDb(db); return {ok:true};
+  },
+  updateStudent:function(id,fields){
+    var db=window.MB.db(); if(!db.students[id]) return {err:'غير موجود'};
+    if(fields.password!==undefined) db.students[id].password=fields.password;
+    if(fields.grade!==undefined) db.students[id].grade=fields.grade?+fields.grade:null;
+    window.MB._saveDb(db); return {ok:true};
+  },
+  removeStudent:function(id){
+    var db=window.MB.db(); delete db.students[id];
+    if(db.current===id) db.current=null; window.MB._saveDb(db);
+  },
+
+  /* ---- المصادقة ---- */
+  login:function(name,password){
+    var db=window.MB.db(); var id=(name||'').trim(); var s=db.students[id];
+    if(!s || s.guest){
+      var k=Object.keys(db.students).find(function(x){
+        return !db.students[x].guest && (x||'').toLowerCase()===id.toLowerCase(); });
+      s=k?db.students[k]:null; id=k;
+    }
+    if(!s) return {err:'لا يوجد طالب بهذا الاسم'};
+    if((s.password||'')!==(password||'')) return {err:'كلمة المرور غير صحيحة'};
+    db.current=id; window.MB._saveDb(db); return {ok:true, student:s};
+  },
+  logout:function(){ var db=window.MB.db(); db.current=null; window.MB._saveDb(db); },
+  currentStudent:function(){ var db=window.MB.db(); return db.current?db.students[db.current]:null; },
+
+  /* ---- حساب التقدّم لطالب: تمكّن/ضعف لكل عالم + نسبة عامة ---- */
+  progress:function(student){
+    var skills=(student&&student.skills)||{};
+    var per={}; Object.keys(window.WORLDS).forEach(function(w){ per[w]={total:0,mastered:[],gap:[]}; });
+    var base = (student&&student.grade)? window.MB.byGrade(student.grade) : window.SKILLS;
+    base.forEach(function(sk){ per[sk.world].total++; });
+    Object.keys(skills).forEach(function(id){
+      var sk=window.MB.byId(id); if(!sk) return; var st=skills[id];
+      if(st.mastered) per[sk.world].mastered.push(sk);
+      else if(st.diag==='gap') per[sk.world].gap.push(sk);
+    });
+    var mastered=0, tot=0, gaps=0;
+    Object.keys(per).forEach(function(w){
+      per[w].pct = per[w].total ? Math.round(per[w].mastered.length/per[w].total*100) : 0;
+      mastered += per[w].mastered.length; tot += per[w].total; gaps += per[w].gap.length;
+    });
+    return { worlds:per, masteryPct: tot?Math.round(mastered/tot*100):0,
+      masteredCount:mastered, gapCount:gaps, totalSkills:tot };
   },
 };

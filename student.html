@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>رحلتي | جسر الرياضيات 🗺️</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { display:['"Baloo Bhaijaan 2"','sans-serif'], body:['Tajawal','sans-serif'] },
+    colors: {
+      grape:{100:'#efe7ff',300:'#c5a8ff',400:'#a880ff',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9'},
+      coral:{100:'#ffe4e0',300:'#ffab9e',500:'#ff6b5e',600:'#f0473a'},
+      sunny:{100:'#fff3cc',300:'#ffd95e',400:'#ffce2e',500:'#ffb800'},
+      mint:{100:'#d2fff0',300:'#7ff0cb',500:'#1fd9a3',600:'#0fb98a',700:'#0a9b73'},
+      sky:{100:'#d9f0ff',300:'#8ad6ff',500:'#22b0ff',600:'#0090e6'},
+      bubble:{100:'#ffe0f4',300:'#ff9ed8',500:'#ff4fb8',600:'#ed2aa0'},
+    },
+    boxShadow:{ pop:'0 6px 0 0 rgba(0,0,0,.16)', card:'0 12px 0 -4px rgba(0,0,0,.06),0 24px 48px -20px rgba(0,0,0,.18)', bubbly:'0 18px 50px -12px rgba(124,58,237,.35)' },
+    keyframes:{
+      bob:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-12px)'}},
+      wobble:{'0%,100%':{transform:'rotate(-5deg)'},'50%':{transform:'rotate(5deg)'}},
+      pop:{'0%':{transform:'scale(0)',opacity:'0'},'70%':{transform:'scale(1.12)'},'100%':{transform:'scale(1)',opacity:'1'}},
+      slideUp:{'0%':{transform:'translateY(30px)',opacity:'0'},'100%':{transform:'translateY(0)',opacity:'1'}},
+    },
+    animation:{ bob:'bob 4s ease-in-out infinite', wobble:'wobble 3s ease-in-out infinite', pop:'pop .5s cubic-bezier(.34,1.56,.64,1) both', slideUp:'slideUp .6s cubic-bezier(.16,.84,.44,1) both' },
+  }},
+};
+</script>
+<style>
+  body{font-family:'Tajawal',sans-serif; background:#fff9ef;}
+  .font-display{font-family:'Baloo Bhaijaan 2',sans-serif;}
+  ::selection{background:#ffd95e;color:#6d28d9;}
+  .sky-bg{background:radial-gradient(circle at 15% 15%,#ffe0f4 0,transparent 30%),radial-gradient(circle at 85% 12%,#d9f0ff 0,transparent 32%),radial-gradient(circle at 75% 85%,#d2fff0 0,transparent 34%),#fff9ef;}
+  .btn-pop{box-shadow:0 6px 0 0 rgba(0,0,0,.16); transition:transform .12s, box-shadow .12s;}
+  .btn-pop:active{transform:translateY(5px); box-shadow:0 1px 0 0 rgba(0,0,0,.16);}
+  .btn-pop:hover{transform:translateY(-2px); box-shadow:0 9px 0 0 rgba(0,0,0,.16);}
+  .blob{position:absolute;border-radius:42% 58% 63% 37%/41% 44% 56% 59%;filter:blur(3px);opacity:.45;}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle;margin:0 .1em;}
+  .frac .num{padding:0 .3em;}
+  .frac .den{padding:.05em .3em 0;border-top:.14em solid currentColor;}
+</style>
+</head>
+
+<body class="sky-bg text-grape-700 min-h-screen overflow-x-hidden">
+
+<header class="px-3 sm:px-5 pt-3 sticky top-0 z-40">
+  <div class="mx-auto max-w-4xl rounded-[1.4rem] bg-white/90 backdrop-blur border-4 border-white shadow-card px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="grid place-items-center w-10 h-10 rounded-2xl bg-gradient-to-br from-grape-500 to-bubble-500 text-white animate-wobble">
+        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3-5 6-5 9 0s6 5 9 0"/><path d="M3 17v3M21 17v3"/></svg>
+      </span>
+      <span class="font-display text-lg font-extrabold text-grape-700">جسر الرياضيات</span>
+    </a>
+    <div id="hdrRight"></div>
+  </div>
+</header>
+
+<main class="relative px-4 sm:px-6 py-8">
+  <div class="blob w-60 h-60 bg-sunny-300 top-20 -right-12 animate-bob"></div>
+  <div class="blob w-52 h-52 bg-mint-300 bottom-10 -left-10 animate-bob"></div>
+  <div id="stage" class="relative mx-auto max-w-4xl"></div>
+</main>
+
+<script src="curriculum.js"></script>
+<script>
+const stage = document.getElementById('stage');
+const hdrRight = document.getElementById('hdrRight');
+const toAr = window.MB.toAr;
+
+function render(){
+  const st = window.MB.currentStudent();
+  if(st) dashboard(st); else loginScreen();
+}
+
+/* ============ شاشة الدخول ============ */
+function loginScreen(){
+  hdrRight.innerHTML = '<a href="index.html" class="font-display text-sm font-bold text-grape-400 hover:text-coral-500">✕ خروج</a>';
+  stage.innerHTML =
+    '<div class="max-w-md mx-auto text-center animate-pop">'+
+      '<div class="mx-auto w-28 h-28 grid place-items-center rounded-[2rem] bg-gradient-to-br from-grape-500 to-bubble-500 text-6xl shadow-bubbly animate-bob">🗺️</div>'+
+      '<h1 class="font-display mt-5 text-3xl sm:text-4xl font-extrabold text-grape-700">خريطة رحلتي</h1>'+
+      '<p class="mt-2 text-grape-500 font-medium">سجّل الدخول باسمك وكلمة المرور التي أعطتك إياها معلّمتك.</p>'+
+      '<div class="mt-6 rounded-[2rem] bg-white border-[6px] border-white shadow-card p-6 text-right space-y-4">'+
+        '<div><label class="font-display font-bold text-grape-600 text-sm">اسم الطالب</label>'+
+          '<input id="inName" class="mt-1.5 w-full px-4 py-3 rounded-2xl bg-grape-100 border-2 border-transparent focus:outline-none focus:border-grape-400 font-bold text-grape-700" placeholder="مثال: سارة" /></div>'+
+        '<div><label class="font-display font-bold text-grape-600 text-sm">كلمة المرور</label>'+
+          '<input id="inPass" type="password" class="mt-1.5 w-full px-4 py-3 rounded-2xl bg-grape-100 border-2 border-transparent focus:outline-none focus:border-grape-400 font-bold text-grape-700" placeholder="••••••" /></div>'+
+        '<div id="loginErr" class="hidden rounded-2xl bg-coral-100 text-coral-600 font-bold text-sm p-3 text-center"></div>'+
+        '<button id="loginBtn" class="font-display w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">دخول 🚀</button>'+
+      '</div>'+
+      '<p class="mt-4 text-sm font-medium text-grape-400">ليس لديك حساب؟ اطلب من معلّمتك إنشاءه من لوحة المعلّم.</p>'+
+    '</div>';
+  const doLogin=function(){
+    const r=window.MB.login(document.getElementById('inName').value, document.getElementById('inPass').value);
+    const e=document.getElementById('loginErr');
+    if(r.err){ e.textContent='⚠️ '+r.err; e.classList.remove('hidden'); }
+    else render();
+  };
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('inPass').addEventListener('keydown', function(ev){ if(ev.key==='Enter') doLogin(); });
+}
+
+/* ============ لوحة «رحلتي» ============ */
+function dashboard(st){
+  const p = window.MB.progress(st);
+  hdrRight.innerHTML =
+    '<div class="flex items-center gap-3">'+
+      '<span class="hidden sm:inline font-display text-sm font-bold text-grape-600">🦊 '+st.name+(st.grade?' · الصف '+toAr(st.grade):'')+'</span>'+
+      '<button id="logoutBtn" class="font-display text-sm font-bold text-grape-400 hover:text-coral-500">خروج</button></div>';
+  document.getElementById('logoutBtn').addEventListener('click', function(){ window.MB.logout(); render(); });
+
+  // المهارة التالية الموصى بها: أول فجوة، وإلا أول مهارة غير متقنة في الصف
+  let nextSkill=null;
+  const worlds = window.WORLDS;
+  Object.keys(worlds).forEach(function(w){ if(!nextSkill && p.worlds[w].gap.length) nextSkill=p.worlds[w].gap[0]; });
+  if(!nextSkill && st.grade){
+    nextSkill = window.MB.byGrade(st.grade).find(function(s){ return !(st.skills[s.id]||{}).mastered; }) || null;
+  }
+  const rescueHref=function(s){ return (s.richPage && s.richPage.length)? s.richPage : 'rescue-skill.html?id='+s.id; };
+
+  function worldRow(w){
+    const wi=worlds[w], d=p.worlds[w];
+    if(d.total===0) return '';
+    const mastered = d.mastered.map(function(s){return '<span class="inline-flex items-center gap-1 text-xs font-bold '+wi.text+' '+wi.soft+' px-2 py-1 rounded-full">🌟 '+s.name+'</span>';}).join(' ');
+    const gaps = d.gap.map(function(s){return '<a href="'+rescueHref(s)+'" class="inline-flex items-center gap-1 text-xs font-bold text-coral-600 bg-coral-100 px-2 py-1 rounded-full btn-pop">🎯 '+s.name+' ←</a>';}).join(' ');
+    return '<div class="rounded-[1.5rem] bg-white border-4 border-white shadow-card p-5">'+
+      '<div class="flex items-center justify-between">'+
+        '<h3 class="font-display font-extrabold '+wi.text+'">'+wi.emoji+' '+wi.name+'</h3>'+
+        '<span class="font-display font-bold '+wi.text+'">'+toAr(d.mastered.length)+'/'+toAr(d.total)+' · '+toAr(d.pct)+'٪</span></div>'+
+      '<div class="mt-2 h-3 rounded-full bg-grape-100 overflow-hidden"><div class="h-full rounded-full '+wi.chip+'" style="width:'+d.pct+'%"></div></div>'+
+      ((mastered||gaps)? '<div class="mt-3 flex flex-wrap gap-1.5">'+mastered+' '+gaps+'</div>'
+        : '<p class="mt-3 text-sm text-grape-400 font-medium">لم تُفحص مهارات هذا العالم بعد.</p>')+
+      '</div>';
+  }
+
+  const notStarted = p.masteredCount===0 && p.gapCount===0;
+
+  stage.innerHTML =
+    '<div class="animate-slideUp">'+
+      '<div class="rounded-[2rem] bg-gradient-to-br from-grape-600 to-bubble-500 text-white border-[6px] border-white shadow-bubbly p-6 sm:p-8">'+
+        '<div class="flex flex-wrap items-center justify-between gap-4">'+
+          '<div class="flex items-center gap-4">'+
+            '<span class="grid place-items-center w-16 h-16 rounded-2xl bg-white/20 text-4xl shadow-pop">🦊</span>'+
+            '<div><div class="font-display text-2xl font-extrabold">'+st.name+'</div>'+
+              '<div class="text-white/80 font-bold text-sm">'+(st.grade?'الصف '+toAr(st.grade):'لم يُحدَّد الصف بعد')+'</div></div></div>'+
+          '<div class="grid grid-cols-3 gap-3 text-center">'+
+            '<div class="bg-white/15 rounded-2xl px-4 py-2"><div class="font-display text-2xl font-extrabold">'+toAr(p.masteryPct)+'٪</div><div class="text-[11px] font-bold text-white/80">إتقان</div></div>'+
+            '<div class="bg-white/15 rounded-2xl px-4 py-2"><div class="font-display text-2xl font-extrabold">'+toAr(p.masteredCount)+'</div><div class="text-[11px] font-bold text-white/80">مهارة 🌟</div></div>'+
+            '<div class="bg-white/15 rounded-2xl px-4 py-2"><div class="font-display text-2xl font-extrabold">'+toAr(p.gapCount)+'</div><div class="text-[11px] font-bold text-white/80">فجوة 🎯</div></div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="mt-4 h-3 rounded-full bg-white/25 overflow-hidden"><div class="h-full rounded-full bg-sunny-400" style="width:'+p.masteryPct+'%"></div></div>'+
+      '</div>'+
+
+      (notStarted
+        ? '<div class="mt-6 rounded-[2rem] bg-white border-4 border-dashed border-grape-300 p-8 text-center">'+
+            '<div class="text-5xl animate-bob">🔮</div>'+
+            '<h3 class="font-display mt-3 text-xl font-extrabold text-grape-700">لنبدأ رحلتك!</h3>'+
+            '<p class="mt-1 text-grape-500 font-medium">أنجز اختبار البداية لنرسم خريطة مهاراتك.</p>'+
+            '<a href="diagnose.html" class="font-display mt-5 inline-flex px-8 py-4 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">🧭 ابدأ اختبار البداية</a></div>'
+        : (nextSkill
+          ? '<div class="mt-6 rounded-[2rem] bg-sunny-100 border-4 border-white shadow-card p-6 text-center">'+
+              '<span class="font-display font-bold text-sunny-500">محطتك القادمة 🚩</span>'+
+              '<h3 class="font-display mt-1 text-xl font-extrabold text-grape-700">'+window.WORLDS[nextSkill.world].emoji+' '+nextSkill.name+'</h3>'+
+              '<a href="'+rescueHref(nextSkill)+'" class="font-display mt-4 inline-flex px-8 py-3.5 rounded-2xl text-white text-lg font-extrabold bg-gradient-to-l from-coral-500 to-bubble-500 btn-pop">🚑 تابع الرحلة</a></div>'
+          : '<div class="mt-6 rounded-[2rem] bg-mint-100 border-4 border-white shadow-card p-6 text-center">'+
+              '<div class="text-4xl">🏆</div><h3 class="font-display mt-1 text-xl font-extrabold text-mint-700">أتقنت كل مهارات صفّك! رائع!</h3></div>'))+
+
+      '<h2 class="font-display mt-8 mb-3 text-2xl font-extrabold text-grape-700">🌍 عوالمي</h2>'+
+      '<div class="grid sm:grid-cols-2 gap-4">'+ Object.keys(worlds).map(worldRow).join('') +'</div>'+
+
+      '<div class="mt-6 flex flex-wrap gap-3 justify-center">'+
+        '<a href="diagnose.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 font-extrabold bg-white border-4 border-grape-100 btn-pop">🔮 اختبار البداية</a>'+
+        '<a href="index.html" class="font-display inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-grape-600 font-extrabold bg-white border-4 border-grape-100 btn-pop">🏝️ الجزيرة</a></div>'+
+      '<p class="text-center mt-5 text-sm font-bold text-grape-400">إعداد المعلمة T. Wad Refae</p>'+
+    '</div>';
+}
+
+render();
+</script>
+</body>
+</html>
