@@ -80,7 +80,7 @@ tailwind.config = {
   <div id="stage" class="relative mx-auto max-w-3xl"></div>
 </main>
 
-<script src="curriculum.js"></script>
+<script src="curriculum.js?v=3"></script>
 <script>
 const stage = document.getElementById('stage');
 const toAr = window.MB.toAr;
@@ -111,7 +111,7 @@ function screenWelcome(){
     ? '<div class="mb-5 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-mint-100 text-mint-700 font-display font-bold text-sm">🦊 مرحباً '+cur.name+'! تقدّمك يُحفظ في رحلتك.</div>'
     : '<div class="mb-5 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sunny-100 text-grape-600 font-display font-bold text-sm">👋 تلعب كضيف — <a href="student.html" class="underline">سجّل الدخول</a> لحفظ تقدّمك.</div>';
   const gradeBtns = window.GRADES.map(function(g){
-    return '<button onclick="startQuiz('+g+')" class="font-display grid place-items-center gap-1 py-5 rounded-3xl bg-white border-4 border-white shadow-card btn-pop">'+
+    return '<button onclick="planGrade('+g+')" class="font-display grid place-items-center gap-1 py-5 rounded-3xl bg-white border-4 border-white shadow-card btn-pop">'+
       '<span class="text-3xl font-extrabold text-grape-600">'+toAr(g)+'</span>'+
       '<span class="text-xs font-bold text-grape-400">الصف</span></button>';
   }).join('');
@@ -126,14 +126,41 @@ function screenWelcome(){
     '</div>';
 }
 
-function startQuiz(grade){
+// بعد اختيار الصف: نعرض العوالم التي سيغطّيها الاختبار (تغطية واضحة)
+function planGrade(grade){
   GRADE = grade;
   QUIZ = window.MB.selectDiagnostic(grade, 8);
-  qIdx = 0;
   result = {};
   QUIZ.forEach(function(s){ if(!result[s.world]) result[s.world]={correct:0,total:0,gaps:{}}; });
-  screenQuestion();
+  // عدّ الأسئلة لكل عالم بالترتيب
+  const order=[], count={};
+  QUIZ.forEach(function(s){ if(count[s.world]===undefined){order.push(s.world);count[s.world]=0;} count[s.world]++; });
+  const cards = order.map(function(w){
+    const wi=window.WORLDS[w];
+    return '<div class="rounded-2xl '+wi.soft+' border-4 border-white shadow-pop p-4 text-center">'+
+      '<div class="text-3xl">'+wi.emoji+'</div>'+
+      '<div class="font-display font-extrabold text-sm mt-1 '+wi.text+'">'+wi.name+'</div>'+
+      '<div class="text-xs font-bold text-grape-400 mt-0.5">'+toAr(count[w])+' سؤال</div></div>';
+  }).join('');
+  document.getElementById('progress').classList.add('hidden');
+  stage.innerHTML =
+    '<div class="text-center animate-pop">'+
+      '<div class="mx-auto w-24 h-24 grid place-items-center rounded-[2rem] bg-gradient-to-br from-grape-500 to-bubble-500 text-5xl shadow-bubbly animate-bob">🗺️</div>'+
+      '<h1 class="font-display mt-5 text-3xl font-extrabold text-grape-700">اختبار الصف '+toAr(grade)+'</h1>'+
+      '<p class="mt-2 text-grape-500 font-medium">سنزور معاً <b class="text-grape-700">'+toAr(order.length)+'</b> عوالم في '+toAr(QUIZ.length)+' أسئلة 👇</p>'+
+      '<div class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">'+cards+'</div>'+
+      '<div class="mt-8 flex flex-wrap gap-3 justify-center">'+
+        '<button onclick="beginQuiz()" class="font-display inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-white text-xl font-extrabold bg-gradient-to-l from-grape-500 to-bubble-500 btn-pop">لنبدأ! 🚀</button>'+
+        '<button onclick="screenWelcome()" class="font-display inline-flex items-center gap-2 px-7 py-4 rounded-2xl text-grape-600 text-lg font-extrabold bg-white border-4 border-grape-100 btn-pop">↩ تغيير الصف</button>'+
+      '</div>'+
+    '</div>';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+function beginQuiz(){ qIdx = 0; screenQuestion(); }
+
+// إبقاء الاسم القديم للتوافق
+function startQuiz(grade){ planGrade(grade); }
 
 function updateProgress(){
   document.getElementById('progress').classList.remove('hidden');
